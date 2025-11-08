@@ -1,0 +1,314 @@
+Apache Spark Architecture and Components :
+	Core components of Apache Spark Architecture (cluster,driver node, worker nodes/executors, CPU cores, and memory)
+	Architecture of Apache Spark (DataFrame and Dataset concepts,SparkSession lifecycle, caching, storage levels, and garbage collection)
+	Apache Spark Architecture execution modes and hierarchy  (local,client,cluster)
+	Deployment modes
+	Spark partitioning in distributed data processing (shuffles and partitions)
+	Execution Patterns of the Apache Spark™ engine (actions,transformations,DAG , partitions LAZY EVALUATION)
+	Features of the Apache Spark Modules : Core,SparkSQL,DataFrames,Pandas API on Spark,MLib
+	Structured Streaming
+	fault tolerance, 
+	garbage collection, 
+	Shuffling
+	usage of Actions and broadcasting, 
+	Spark Connect
+	common troubleshooting 
+	tuning techniques
+	Spark RDD Programming - Transformations- Narrow / Wide  - Actions  - Utilize shared variables and key-value pairs
+	Understand and use the various Spark libraries
+	RDDs    
+		1) Different Ways to Create RDD’s in Pyspark.
+		2) RDD Transformations
+		3) RDD Actions
+		4) RDD Cache & Persist   
+	
+
+Spark DataFrame using PYSpark (Data Loading, Data Exploration, Query Actions) :-   https://learn.microsoft.com/en-us/azure/databricks/getting-started/dataframes
+	Create :
+		Create Spark Dataframes using Python Collections and Pandas Dataframes
+		Create Single Column Spark Dataframe using List
+		Create Multi Column Spark Dataframe using List
+		Create Spark Dataframe using Pandas Dataframe
+		CREATE DATAFRAME USING JSON,PARQUET etc
+	
+	Overview of Spark Row :
+		Convert List of Lists into Spark Dataframe using Row
+		Convert List of Tuples into Spark Dataframe using Row
+		Convert List of Dicts into Spark Dataframe using Row
+		Overview of Basic Data Types in Spark
+
+	Schema:
+		Specifying Schema for Spark Dataframe using String
+		Specifying Schema for Spark Dataframe using List
+		Specifying Schema using Spark Types
+		Manage input and output operations by writing, overwriting, and reading DataFrames with schemas
+
+	Overview of Special Data Types in Spark :
+		Array Type Columns in Spark Dataframes
+		Map Type Columns in Spark Dataframes
+		Struct Type Columns in Spark Dataframes - STRUCTTYPE & STRUCTFIELD 
+	
+	Reading Data into DF
+		Reading Data from CSV files into Spark Data Frame
+			Specifying Schema while reading CSV data into Data Frame
+			Using toDF and inferSchema using CSV to create Spark Data Frame
+			Specifying Delimiter while using CSV to create Spark Data Frame
+			Using Options while reading CSV Files into Spark Data Frame
+		Reading JSON Files into Spark Data Frame
+			Specifying Schema while reading JSON Files into Data Frame
+			Side effects of inferring schema while creating Spark Data Frame
+			Reading Parquet Files into Spark Data Frame
+			Specifying Schema while reading Parquet Files into Data Frame
+		Reading and Writing Different Types of Files using Dataframe		
+			1) Csv files
+			2) Json files
+			3) Xml files
+			4) Excel files
+			5) Complex Json files
+			6) Avro files
+			7) Parquet files
+			8) Orc files	
+	Writing Data into DF
+		Writing Spark Data Frames into CSV files
+			Specifying Header while writing Spark Data Frame into CSV files
+			Using Compression while writing Spark Data Frame into CSV Files
+			Specifying Delimiter while writing Spark Data Frame into CSV Files
+			Using Options while writing Spark Data Frame into CSV Files
+		Writing Spark Data Frames into JSON Files
+			Compression while writing Spark Data Frames into JSON Files
+			Writing Spark Data Frames into Parquet Files
+			Compression while writing Spark Data Frames into Parquet Files
+			Different Modes to write Spark Data Frame into Files	
+	Convert 
+			Convert JSON Data to Parquet using Spark APIs
+			Convert Comma Separated Files to Pipe Separated Files using Spark
+	Combining DF's
+	Perform data deduplication and validation operations on DataFrames
+	Select on Spark Data Frame :  selectExpr on Spark Data Frame
+	Narrow and Wide Transformations
+	
+	Columns	:- 
+		Overview of Renaming Spark Data Frame Columns or Expressions
+		Naming derived columns using withColumn
+		Renaming Columns using withColumnRenamed
+		Renaming Spark Data Frame columns or expressions using alias
+		Renaming and Reordering multiple Spark Data Frame Columns
+		manipulating
+		HANDLE NULL
+		Referring Columns using Spark Data Frame Names
+		Invoking Functions using Spark Column Objects
+		Categories of Functions to Manipulate Columns in Spark Data Frames
+		Special Functions col and lit
+		Extracting Strings using substring from Spark Data Frame Columns
+		Extracting Strings using split from Spark Data Frame Columns
+		Padding Characters around strings in Spark Data Frame Columns
+		trimming Characters from strings in Spark Data Frame Columns
+		Dealing with nulls in Spark Data Frames
+		Using CASE and WHEN on Spark Data Frames
+		Overview of Boolean Operations
+			Boolean OR on same column of Spark Data Frame and IN Operator
+			Boolean OR on different columns of a Spark Data Frame
+			Boolean AND Condition on Spark Data Frames
+		Dropping Columns from Spark Data Frames
+			Overview of Spark Data Frame drop function
+			Dropping a Single Column from a Spark Data Frame
+			Dropping Multiple Columns from a Spark Data Frame
+			Dropping List of Columns from a Spark Data Frame
+			Dropping Duplicate Records from Spark Data Frames
+			Dropping Null based Records from Spark Data Frames
+
+	Rows :- 
+		Filtering Data from Spark Data Frames
+			Overview of Filter or Where Function on Spark Data Frame
+			Filter using Equal Condition on Spark Data Frames
+			Filter using Not Equal Condition on Spark Data Frames
+			Filter using Between Operator on Spark Data Frames
+			Dealing with Null Values while Filtering Data in Spark Data Frames
+			Filtering with Greater Than and Less Than on Spark Data Frames
+		explode arrays
+		distinct vs dropDuplicates
+		Joining Spark Data Frames  : JOIN - Inner join, left join, broadcast join, cross join
+			Performing Inner Join on Spark Data Frames
+			Performing Outer Join using left between Spark Data Frames
+			Performing Outer Join using right between Spark Data Frames
+			Difference between Left Outer Join and Right Outer Join
+			Performing Full Outer Join between Spark Dataframes
+			Overview of Broadcast Join in Spark
+			Performing Cross Join using Spark Data Frames
+			UNION, union all 
+		    multiple  keys
+		
+		iterating, 
+		printing schema
+		conversion between DataFrame 
+		sequence/list formats
+	    Overview of Conditions and Operators related to Spark Data Frames
+		Overview of Sorting a Spark Data Frame : SORT & ORDERBY 
+			Sort Spark Data Frame in Ascending Order by a given column
+			Sort Spark Data Frame in Descending Order by a given column
+			Dealing with Nulls while sorting Spark Data Frame
+			Composite Sorting of a Data Frame
+			Prioritized Sorting of a Spark Data Frame
+
+	Variables :-  Types of variables in Spark - including broadcast variables and accumulators
+		Broadcast Variables – share, optimize, reduce, memory
+		Accumulators – counters, metrics, debug, track
+		
+	Functions :-
+		Predefined Functions using Spark Data Frame APIs
+		String , Date , Cast , Null etc Functions
+		UDFs & Functions – define, register, apply, SQL
+		Common String Manipulation Functions
+		UDFs : Create and invoke user-defined functions with or without stateful operators, including StateStores
+				Registering Spark User Defined Functions
+				Using Spark UDFs as part of Data Frame APIs
+				Using Spark UDFs as part of Spark SQL
+				Create Spark UDF to cleanse data in Spark Data Frame
+		Window Functions – rank, row, lead, lag
+		DATE FUNCTIONS and DATE FORMATs
+			Date and Time Manipulation Functions using Spark Data Frames
+			Date and Time Arithmetic using Spark Data Frames
+			Using date and time trunc functions on Spark Data Frames
+			Date and Time Extract Functions on Spark Data Frames
+			Using to_date and to_timestamp on Spark Data Frames
+			Using date_format Function on Spark Data Frames
+			Dealing with Unix Timestamp in Spark Data Frames
+	Aggregations : 
+		Count, approximate count distinct,and mean, summary ,GROUP BY 
+		Common Spark Aggregate Functions
+		Total Aggregations on a Spark Data Frame
+		Getting Count of a Spark Data Frame
+		Overview of groupBy on Spark Data Frame
+		Perform Grouped Aggregations using direct functions on a Spark Data Frame
+		Perform Grouped Aggregations using Agg on a Spark Data Frame
+		Windowing Aggregations
+	Partitioning and Bucketing in Spark Data Frames  :-
+		partitionBy , Repartition, Coalesce spark_partition_id of Spark Data Frames	
+		Overview of Partitioning Data Frames
+		Partition Spark Data Frame By Single Column
+		Partition Spark Data Frame By Multiple Columns
+		Reading Data into Spark Data Frames using Partition Pruning
+		bucketing and skew
+	handling missing data
+	COLLECT
+	PIVOT & UNPIVOT
+	TEMP VIEW 
+	EXPLODE 
+	Dataframe Caching & Optimization – persist, memory, shuffle, plan
+	
+	# select        - The select() method is used to select specific columns. 
+	# selectExpr    - 
+	# where,filter  - Both methods are used to filter rows based on conditions.
+	# limit  - limit data
+	# orderBy() and sort() - These methods are used for sorting data in DataFrame.
+	# collect       - returns all the rows as a list of Row objects. 
+	# withColumn    - add new column
+	# withColumns   - add multiple columns at same time
+	# withColumnRenamed - rename column
+	# drop -  delete column
+	# df.orderBy("salary")                            # Ascending sort
+	# df.orderBy(col("age").desc())                   # Descending sort
+	# dictinct()  # get unique data  df.select('fName').distinct()
+.
+
+Spark Streaming – DStreams, receivers, batches, output
+
+Spark Structured  Streaming :  source, sink, watermark, state
+	Explain the Structured Streaming engine in Spark - https://learn.microsoft.com/en-us/azure/databricks/structured-streaming/concepts 
+	Functions
+	Micro-batch processing
+	Exactly-once semantics
+	fault tolerance mechanism
+	Create and write Streaming DataFrames and Streaming Datasets, including the basic output modes and output sinks
+	Perform basic operations on Streaming DataFrames and Streaming Datasets, such as selection, projection, window and aggregation
+	COPY INTO - INTRODUCTION
+	watermarks :- 
+		- Perform Streaming Deduplication in Structured Streaming, both with and without watermark usage
+		- Handle Late Arriving Data with Watermarks // https://learn.microsoft.com/en-us/azure/databricks/structured-streaming/watermarks 
+	Programming model
+		- readStream :
+			- Reading streams from Cloud Object Storage / Message Bus and queues  / Delta Lake - Delta Table / Socket (for testing) / RateSource (for testing) 
+			- file formats for loading data - JSON,CSV,Parquet,AVRO,text,binaryfile,orc,delta 
+			- options() : File(path,maxFilePerTrigger,LatestFirst,CLeanSource,sourceArchiveDir) , Kafka (kafka.bootstrap.servers,subscrive,startingoffsets,endingoffsets) , Delta Lake(ignoreDelete,ignroeChanges) 
+		- writeStream :
+			- wrtie streams to File,Kafka,Console,Memory etc  
+			- outputMode : Append , Update , Complete
+			- trigger :    Default , Fixed Interval (processingTime = '2 minutes'), Avaialable Now (availableNow=True)
+			- options() :  File (path,checkpointlocation,compression) , Kafka (kafka.bootstrap.servers,topic,kafka.security.protocol), Console(truncate,numRows),Memory(queryName)
+			- Sink Formats : parquet, json, csv, orc, console, memory, delta, and kafka.
+	Auto Loader (cloud_files in Databricks) :  
+		ARCHITECTURE
+		INCREMENTAL LOAD
+		SCHEMA HANDLE
+		Cloud Object Storage - Auto Loader (cloud_files) for Reading DataFiles from cloud object store   // https://learn.microsoft.com/en-us/azure/databricks/ingestion/cloud-object-storage/auto-loader/
+	Stateless (select,filter) and Statefull (groupBy,join,dropDuplicates) Streaming 
+	Streaming Joins : 
+       - All joins except CROSS and FULL dont support 
+       - Union of Streams (stream DataFrame to  static DataFrame, stream DF to stream DF, stream DF to normal DF     
+       - Challenges and Limitations 
+	Window Operations :  
+		- Tumbling windows / Sliding windows / Session - examples with joins on these 
+	spark.conf.set("spark.sql.streaming.schemaInference", True) 
+		- Schema inference is typically used with formats that do not have a fixed schema, such as JSON, CSV, and XML.
+	Handling bad records 
+		- Here are some common methods: badRecordsPath / dropMalformed and failOnDataLoss / Auto Loader
+	Stream data from kafka into Gen2lake  // refer https://learn.microsoft.com/en-us/azure/databricks/structured-streaming/tutorial
+	Load the structured streaming data into Tables // refer https://learn.microsoft.com/en-us/azure/databricks/structured-streaming/tutorial 
+
+
+SPARKSQL :
+	Spark SQL Create database 
+	Drop databases 
+	Create internal table 
+	Create external table 
+	Create partitioned table 
+	Create partitioned with bucketing table 
+	SPARK DML insert, update, delete and merge operations 
+	SPARK SQL DRL Select queries with different clauses 
+	Spark SQL MERGE With SCD Type 1 and SCD Type 2 
+	Spark SQL WHERE Clause, Group By Clause and Having Clauses 
+	Spark SQL Order by, Sort By clauses 
+	Spark SQL join types, Window , Pivot , Limit and Like 
+	Spark SQL Grouping Sets, Rollup and Cube 
+	Spark SQL Cultured By and Distributed By 
+	Spark SQL Case, With and Take sample 
+	SQL Nested Queries
+	SQL SCD Type 2 implementation
+	User-Defined Functions
+	Performance Tuning
+	Spark-Hive Integration
+	LIMIT , LIKE ,DISTINCT,	JOINING & UNION,
+	WINDOWS FUNCTION //  refer C:\sureshdulam\Azure\Spark\docs\del\sqlwindowfunctions.pdf
+	LEAD & LAG, 
+	Spark SQL functions. 
+	Utilize common data sources such as JDBC, files, etc., to efficiently read from and write to Spark DataFrames using Spark SQL, including overwriting and partitioning by column
+	Execute SQL queries directly on files, including ORC Files, JSON Files, CSV Files, Text Files,and Delta Files, and understand the different save modes for outputting data in Spark SQL.
+	Save data to persistent tables while applying sorting and partitioning to optimize data retrieval.
+	Register DataFrames as temporary views in Spark SQL, allowing them to be queried with SQL syntax.
+
+
+Troubleshooting and Tuning Apache Spark DataFrame API Applications :
+		Implement performance tuning strategies 
+		optimize cluster utilization, partitioning, repartitioning, coalescing, 
+		identifying data skew
+		reducing shuffling
+		Describe Adaptive Query Execution (AQE) and its benefits. 
+		Perform logging and monitoring of Spark applications - publish, customize, and analyze Driver logs and Executor logs to diagnose out-of-memory errors, cluster underutilization,etc.
+	
+
+Using Spark Connect to deploy applications
+	● Describe the features of Spark Connect.
+	● Describe the different deployment mode types (Client, Cluster, Local) in the Apache Spark™ environment.
+	
+	
+Using Pandas API on Spark
+	● Explain the advantages of using Pandas API on Spark.
+	● Create and invoke Pandas UDF	
+
+
+💡 𝘼𝙙𝙫𝙖𝙣𝙘𝙚𝙙 & 𝙎𝙘𝙖𝙡𝙖𝙗𝙡𝙚
+	➡️ PySpark with MLlib – regression, classification, clustering, pipelines
+	➡️ GraphX Concepts – vertices, edges, algorithms, traversal
+	➡️ Performance Tuning – spark.sql, partitions, caching, joins
+	➡️ Cluster & YARN – executors, memory, scheduler, jobs
+	➡️ Debugging & Logging – logs, stages, metrics, lineage

@@ -1,0 +1,354 @@
+
+readstream  -> format (file/socket/kafka topics/rate) -> options () -> load 
+
+writestream -> format (file/kafka topics/foreach/console/memory) -> 
+
+readStream -> 1 trigger interval,2 intrv,3 intrv ... -> writeStream append 1 trg interval,2 intrv,3 intrv based on output mode -> Unbounded Table
+
+Triggers : https://spark.apache.org/docs/latest/streaming/getting-started.html
+
+
+
+
+
+Define a Streaming Query: Initiate a Spark session and define a streaming DataFrame to read data in real-time from sources like Kafka, socket, or file systems. Use spark.readStream to initiate this process
+Set Up Schema: Explicitly define the schema of the incoming data to ensure that Spark can infer the structure of the data correctly and process it efficiently
+Configure Stream Triggers: Use triggers to control the frequency at which streaming queries process data. Common options include fixed intervals or continuous processing for near real-time latency.
+Handle Late Data with Watermarks: Define watermarks to manage and filter out late data. Watermarks allow the system to retain a specified amount of data to account for lateness, ensuring accurate and complete results.
+Checkpoints for Fault Tolerance: Set up checkpoints to maintain  state across failures. Use the checkpointLocation option to specify the directory for saving state information.
+Stream Output Modes: Choose the appropriate output mode for your use case — append, complete, or update. Each mode handles the output data differently based on the operation requirements
+Error Handling and Logging: Implement robust error handling and logging mechanisms to monitor the health of the streaming application and troubleshoot issues in real-time
+
+	schema = "id INT, value STRING"
+	streaming_df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "localhost:9092").option("subscribe", "topic").load().selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+	streaming_df = streaming_df.selectExpr("CAST(value AS STRING)")
+	query = streaming_df.writeStream.outputMode("append").format("console").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+
+
+-------------------------------- Streaming : DataProcessedContinously/Checkpoint/Trigger/OutputMode -------------------------------------------------------
+
+- Below is for Traditional file streaming Source way and databricks introduced new way called AutoLoader 
+
+Batch Processing :
+	Data Handling	: Processes a fixed amount of static, non-changing data as a single operation. 
+						It is typically used for large volumes of data that are collected over a period of time and then processed together in a batch
+	Latency      	: Higher latency because it processes large volumes of data at once. The results are available only after the entire batch is processed.
+	Use Cases	 	: Suitable for scenarios where data does not need to be processed immediately, 
+						such as end-of-day reports, data warehousing, and ETL (Extract, Transform, Load) operations.
+	Processing Model: Uses explicit instructions to process data in bulk. Each batch is processed independently, 
+					  and the results are calculated based on the entire dataset at the time of the query.
+	Technologies	: Commonly uses tools like Apache Hadoop, Apache Spark (batch mode), and traditional ETL tools.
+	Joins			: Joins are stateless, meaning results are processed immediately and reflect the data at the time the query runs. 
+					  Each query execution calculates new results based on the specified source data
+	Challenges		: Can miss data if not all records are ingested in the same batch, leading to potential data inconsistencies
+
+Streaming :
+	Data Handling 	: Processes data continuously as it arrives, in small, incremental batches. It is designed to handle unbounded, 
+						continuously growing datasets and allows for real-time or near real-time processing
+	Latency			: Offers low latency as it processes data in near real-time. Results are available almost immediately after the data is ingested.
+	Use Cases		: Ideal for real-time analytics, monitoring, fraud detection, recommendation systems, and any application that requires immediate insights 
+						and actions based on the latest data.
+	Processing Model: Uses a continuous query model where data is processed incrementally. The system continuously updates the results as new data arrives
+	Technologies	: Utilizes technologies such as Apache Kafka, Apache Flink, Apache Spark Streaming, and Amazon Kinesis.
+	Joins			: Joins can be stateful or stateless. **********
+					  Stateful joins track information about the data sources and iteratively update the results, which can be complex to implement. 
+					  Stream-static joins are stateless and provide a good option for joining incremental data sources with static data sources
+	Challenges		: Requires careful handling of state and windowing to ensure accurate and timely results. 
+					  It can be challenging to manage the operational semantics of stateful joins and other complex operations
+
+
+CheckPoint :  
+	- Is a FaultTolerance mechanism that allows a query to recover from failures and resume processing from where it left off without dataloss or duplication
+	- Useses Offset Logs and CommitLogs for Faulttolerance 
+		cust_df = (spark.readStream.format("json").schema(customers_schema).load("/Volumes/catalogbox/landing/operational_data/customers_stream/"))
+		cust_transformed_df = (customers_df.withColumn("file_path", col("_metadata.file_path")).withColumn("ingestion_date", current_timestamp()))
+		streaming_query = (cust_transformed_df.writeStream
+							.format("delta")
+							.option("checkpointLocation", "/Volumes/catalogbox/landing/operational_data/customers_stream/_checkpoint_stream")
+							.toTable("catalogbox.bronze.customers_stream"))
+		streaming_query.stop() 	//  This is mandatory step to stop writting 
+	
+
+Micro-Batch Processing Modes of Spark Structured Streaming :
+		 - Trigger (Frequency of the Micro Batches)
+				- Default        :  No Trigger Specified : 500 microseconds interval 
+				- Fixed Interval : .trigger(processingTime = '2 minutes') : Micro Batch starts at the user specified interval 
+						Fixed-Interval Micro-batching: Configure fixed-interval triggers to process data at regular intervals. This is useful for predictable workloads where data arrival is consistent
+				- Trigegred Once : .trigger(once = True) : Process all data available at once and stops (deprecated)
+				
+				- Available Now  : .trigger(availableNow = True) : Process all data available as multiple micro batches and stops 
+						One-Time Batch Processing: Use one-time triggers to process the data available at the moment and stop the query. This is suitable for scenarios where data needs to be processed only once
+				- Continous 	 : .trigger(continous = '2 seconds') : Process data continously but checkpoints at interval specified (Experimental)		
+						Continuous Processing: For low-latency applications, enable continuous processing mode. This provides microsecond-level latency but is limited to specific data sources and sinks
+				> streaming_query = (cust_transformed_df.writeStream
+														.format("delta")
+														.trigger(processingTime = '2 minutes')
+											.option("checkpointLocation", "/Volumes/catalogbox/landing/operational_data/customers_stream/_checkpoint_stream")
+														.toTable("catalogbox.bronze.customers_stream"))
+					Custom Trigger Intervals: Define custom intervals to optimize performance based on the specific requirements of your application. This can help balance the load and reduce processing latency
+								query = streaming_df.writeStream.outputMode("append").format("console").trigger(processingTime='10 seconds').option("checkpointLocation", "/path/to/checkpoint/dir").start()
+								query.awaitTermination()
+
+		 - Output Mode (How the data is written to output)	
+				- Append (Default)	: writes only the **** NEW ROWS **** arrived since the last micro-batch : Stateless Apps
+									  *** CANT *** be used of aggragations since spark cant read the past records
+				- update 			: writes only the rows that have changed since the last micro-batch   : Statefull Apps
+									  *** CAN *** be used of aggragations with the help of ******* WATERMARKS *********
+				- Complete          : Writes the *** ENTIRE result / REWRITE entire table ****** to the sink evey time 	
+									  *** CAN *** be used of aggragations but *** NOT efficient *** , only used for debugging 
+				> streaming_query = (cust_transformed_df.writeStream
+														.format("delta")
+														.outputMode("append")
+														.trigger(processingTime = '2 minutes')
+											.option("checkpointLocation", "/Volumes/catalogbox/landing/operational_data/customers_stream/_checkpoint_stream")
+														.toTable("catalogbox.bronze.customers_stream"))
+
+				Ref link for output :-  https://spark.apache.org/docs/latest/streaming/getting-started.html
+					The “Output” is defined as what gets written out to the external storage. The output can be defined in a different mode:
+					Complete Mode - The entire updated Result Table will be written to the external storage. It is up to the storage connector to decide how to handle writing of the entire table.
+					Append Mode - Only the new rows appended in the Result Table since the last trigger will be written to the external storage. This is applicable only on the queries where existing rows in the Result Table are not expected to change.
+					Update Mode - Only the rows that were updated in the Result Table since the last trigger will be written to the external storage (available since Spark 2.1.1). 
+					               Note that this is different from the Complete Mode in that this mode only outputs the rows that have changed since the last trigger. If the query doesn’t contain aggregations, it will be equivalent to Append mode.
+			
+
+				from pyspark.sql.functions import from_json, col
+				kafka_df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "localhost:9092").option("subscribe", "topic").load()
+				kafka_df = kafka_df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+				schema = "id INT, value STRING"
+				json_df = kafka_df.select(from_json(col("value"), schema).alias("data")).select("data.*")
+				query = json_df.writeStream.outputMode("append").format("console").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+				query.awaitTermination()
+
+
+Monitoring Streaming Queries :-
+	- Monitor via Spark UI
+		- Stream Tab show active queries
+		- Progress details per batch 
+	- Use external Monitor Tools
+		- DataDog , Grafana, Prometheus etc
+		- Monitor processing rates and latency
+		- Memory usgae and garbage collection
+	- Some usfull function :
+		- df.isstreaming 				# check if DF is treaming
+		- streaming_query.id 			# get unique identifer of the query
+		- streaming_query.status 		# get current satte for the query
+		- streaming_query.lastProgress  # monitor streaming query progress
+
+
+------------------- Streaming : AutoLoader : New Structured ***READ***Streaming Source cloudFiles()-Used for files in cloud storage---------------------------
+	
+Disadvantages of Traditional file streaming Source :
+	- Inefficient File Listing : 
+		 - Repeatedly scan entire directories to detect new files.
+		 - Listing files from an entire folder is slow and expensive, especially when dealing with millions of files.
+	- Scalability Issues : 
+		- Duplicate file detection is achieved by storing the list of files already processed in an in-memory map on the driver node. This doesn't scale well.
+	    - Large volumes of data can cause memory constraints.
+	- Schema Evolution Problems 
+		- Users must manually define the schema before the streaming starts.
+		- If a new column appears in the incoming data, it may lead to data loss or requires manual intervention.
+		
+Auto Loader Advantages :	
+	- Efficient File Detection using Cloud Services 
+		- Autoloader uses file notification mode, which leverages cloud storage services like AWS S3, Event Notifications and Azure Event Grid to track new files.
+		- Instead of scanning the entire directory, it reads from a cloud queue to look for new files for real time ingestion.
+	- Scalability Improvements
+		- It replaces in-memory tracking with Rocksdb, a distributed key value store, allowing infinite scalability without increasing driver memory usage.
+	- Schema Evolution & Resiliency
+		- Supports schema evolution by automatically adding new columns or rescuing unexpected data in a separate ***_rescued_data column***.
+		- It offers different schema evolution modes, allowing users to control how schema changes are handled.
+		> customers_df = spark.readStream
+							.format(”cloudFiles")
+							.option("cloudFiles.format", "json")
+							.option("cloudFiles.useNotifications", "true") 
+							.option("cloudFiles.schemaLocation",“/Volumes/gizmobox/landing/operational_data/customers_stream/_schema”) 
+								//With above option schemaLocation, AutoLoader will create schema based on file and writes to this location 
+								//.schema(_schema) - If you define the schema then use .schema to assign
+							.option("cloudFiles.inferColumnTypes", "true") // Set this explicitly for JSON Files 
+							.option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+							.option("cloudFiles.schemaHints", "date_of_birth DATE, member_since DATE, created_timestamp TIMESTAMP")
+							.option("pathGlobFilter", "test*.json")\
+							.load("/Volumes/gizmobox/landing/operational_data/customers_stream")
+		> customers_df.writeStream
+					.format("delta")
+					.option("mergeSchema", "true")
+					.option("checkpointLocation", "/path/to/checkpoint/dir")
+					.start("/path/to/delta/table")
+		> customers_df.stop()			
+	- ALternative option for AutoLoader is COPY Command 
+		
+Auto Loader Explanation :
+	- Auto Loader is a new structured streaming source designed for large scale, efficient data ingestion  	
+	- Auto Loader incrementally and efficiently processes new data files as they arrive in cloud storage without any additional setup.
+	- Auto Loader is a feature that simplifies the process of ingesting data from cloud storage into Delta Lake tables. 
+	- It provides a scalable and efficient way to handle large volumes of data with minimal configuration. 
+	- It provides a Structured Streaming source called cloudFiles. Given an input directory path on the cloud file storage, 
+		the cloudFiles source automatically processes new files as they arrive, with the option of also processing existing files in that directory
+	- Key Features
+		Incremental Data Processing: Auto Loader can automatically detect new files as they arrive in cloud storage and incrementally process them.
+		Schema Evolution   : It supports automatic schema inference and evolution, allowing you to handle changes in the data schema without manual intervention.
+		Scalability        : Auto Loader is designed to handle large volumes of data efficiently, making it suitable for big data applications.
+		Fault Tolerance    : It provides built-in fault tolerance and can recover from failures without data loss.
+	-  leveraging Auto Loader when used in a streaming table query
+
+	-  It uses a sample of the data to infer the schema and can evolve the schema as it processes more data
+  
+	SELECT * FROM read_files('s3://your-bucket/path/to/data', 
+						 `cloudFiles.format` => 'csv', 
+                         `cloudFiles.schemaLocation` => '/path/to/schema', 
+                         `cloudFiles.inferColumnTypes` => 'true', 
+                         `cloudFiles.includeExistingFiles` => 'true', 
+                         `cloudFiles.maxFilesPerTrigger` => '10');
+	Key Options
+		cloudFiles.format: Specifies the format of the source files (e.g., csv, json, parquet).
+		cloudFiles.schemaLocation: Specifies the location to store the inferred schema.
+		cloudFiles.inferColumnTypes: Indicates whether to infer column types automatically.
+		cloudFiles.includeExistingFiles: Indicates whether to include existing files in the initial load.
+		cloudFiles.maxFilesPerTrigger: Specifies the maximum number of files to process in each trigger.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+06_handling_errors_and_exceptions
+07_window_operations_and_watermarks
+
+
+
+Applying Window Aggregations to Streaming Data with Apache Spark Structured Streaming
+	 Time-based Windows: Define time-based windows to aggregate streaming data over fixed intervals. Use window functions to specify the window duration and slide interval.
+	 Session Windows: Use session windows to aggregate data based on  sessions of activity. This is useful for user activity tracking where the session duration is dynamic.
+	 Watermarking for Late Data: Apply watermarks to handle latearriving data within a specified window. This ensures that the aggregation results are complete and accurate.
+	 Grouped Aggregations: Combine window functions with groupBy operations to perform grouped aggregations on streaming data. This is useful for generating insights based on grouped time intervals.
+	 Custom Aggregations: Implement custom aggregation functions to perform complex computations on streaming data. Use user-defined functions (UDFs) if necessary.
+	 Stateful Aggregations: Manage stateful aggregations to keep track of running totals or averages across windows. Ensure that the state is efficiently managed to prevent memory issues.
+	 Performance Optimization: Tune window aggregation performance by adjusting window sizes, slide intervals, and Spark configurations to balance processing speed and resource usage
+	
+	from pyspark.sql.functions import window
+	windowed_counts = json_df.groupBy(window(col("timestamp"), "10 minutes")).count()
+	query = windowed_counts.writeStream.outputMode("update").format("console").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()	
+	
+
+Handling Out-of-Order and Late-Arriving Events with Watermarking in Apache Spark Structured Streaming
+	 Define Watermarks: Specify watermarks to manage late-arriving data. Use the withWatermark function to set the watermark delay, allowing late data to be included in computations within a certain time frame.
+	 Event Time vs. Processing Time: Understand the difference between event time and processing time. Watermarks operate on event time to handle late data based on when the event actually occurred.
+	 Window Aggregations with Watermarks: Combine watermarks with window aggregations to handle late data effectively. This ensures accurate results even when data arrives out of order.
+	 State Management: Manage the state of streaming queries with watermarks to ensure that old data is efficiently cleaned up, preventing memory overflow and ensuring high performance.
+	 Handling Extreme Delays: Configure strategies to handle extremely delayed data, such as redirecting it to a separate processing pipeline or logging it for further analysis.
+	 Monitoring Watermarks: Continuously monitor watermark progress and late data handling to ensure that your streaming application performs as expected.
+	 Error Handling: Implement robust error handling to manage scenarios where data arrives much later than expected, ensuring that the streaming application can gracefully handle such cases.	
+	
+	watermarked_df = json_df.withWatermark("timestamp", "10 minutes")
+	windowed_counts = watermarked_df.groupBy(window(col("timestamp"), "10 minutes")).count()
+	query = windowed_counts.writeStream.outputMode("update").format("console").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+	
+	
+Configuring Checkpoints for Structured Streaming in Apache Spark
+	 Purpose of Checkpoints: Understand the importance of checkpoints in maintaining state and fault tolerance for streaming applications. Checkpoints store progress information to recover from failures.
+	 Checkpoint Configuration: Configure the checkpointLocation option in your streaming query to specify where Spark should store checkpoint data. This is crucial for stateful operations and exactly-once semantics.
+	 Incremental Checkpointing: Utilize incremental checkpointing to only store changes since the last checkpoint, reducing storage overhead and improving recovery times.
+	 Durable Storage for Checkpoints: Ensure that checkpoint data is stored in a durable, reliable storage system such as HDFS, S3, or a distributed file system to prevent data loss.
+	 Managing Checkpoint Data: Regularly clean up old checkpoint data to prevent storage bloat. Implement policies to manage the lifecycle of checkpoint data.
+	 Checkpoint Compatibility: Ensure that checkpoint data is compatible with the version of Spark being used. Be cautious when upgrading Spark versions as checkpoint formats may change.
+	 Monitoring Checkpoints: Continuously monitor checkpoint progress and health to ensure that your streaming application maintains high availability and fault tolerance.	
+	
+	query = json_df.writeStream.outputMode("append").format("parquet").option("path", "/path/to/output/dir").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()	
+	
+	
+Writing the Output of Apache Spark Structured Streaming to a Sink such as Delta Lake	
+	 Delta Lake Integration: Utilize Delta Lake as a sink for structured streaming data to benefit from ACID transactions and scalable metadata handling. Configure the output format as delta.
+	 Schema Enforcement: Leverage Delta Lake’s schema enforcement to ensure data consistency and integrity. This prevents corrupted data from being written to the sink.
+	 Partitioning Data: Partition the output data based on specific columns to optimize query performance and manage large datasets efficiently. Delta Lake supports dynamic partitioning.
+	 Merge Operations: Use Delta Lake’s merge operations to upsert data efficiently. This is useful for handling late-arriving data or implementing Change Data Capture (CDC) patterns.
+	 Optimizing Delta Tables: Optimize Delta tables using OPTIMIZE and VACUUM commands to compact files and remove old data, improving performance and reducing storage costs.
+	 Checkpointing and Fault Tolerance: Configure checkpointing to ensure fault tolerance and state management. This is essential for maintaining exactly-once semantics in streaming applications.
+	 Monitoring and Metrics: Monitor the performance and health of Delta Lake streaming applications using Spark’s built-in metrics and logging capabilities.
+	
+	delta_streaming_query = json_df.writeStream.format("delta").outputMode("append").option("checkpointLocation", "/path/to/checkpoint/dir").option("path", "/path/to/delta/table").start()
+	delta_streaming_query.awaitTermination()	
+	
+
+Joining Streaming Data with Static Data in Apache Spark Structured Streaming and Delta Lake :-
+	 Static Data as Broadcast Variables: Use broadcast variables to efficiently join streaming data with static data. This minimizes data shuffling and improves join performance.
+	 Delta Lake for Static Data: Store static data in Delta Lake tables to leverage Delta Lake’s optimization features and seamless integration with Spark Structured Streaming.
+	 Efficient Join Strategies: Choose appropriate join strategies based on the size of the data sets. Broadcast joins are ideal for small static data, while shuffle joins are necessary for larger datasets.
+	 Schema Management: Ensure that the schemas of the streaming and static data are compatible for join operations. Use Spark’s schema evolution features if necessary.
+	 Handling Late Data: Manage late-arriving data by implementing watermarking and join window configurations. This ensures that all relevant data is included in the join results.
+	 Performance Tuning: Optimize join performance by tuning Spark configurations such as spark.sql.autoBroadcastJoinThreshold and spark.sql.shuffle.partitions.
+	 Monitoring and Debugging: Monitor the join operations using Spark UI and logs to identify and resolve performance bottlenecks or data issues.	
+	
+	static_df = spark.read.format("delta").load("/path/to/static/data")
+	joined_df = streaming_df.join(static_df, "id")
+	query = joined_df.writeStream.format("console").outputMode("append").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+	
+	
+Joining Streaming Data with Streaming Data in Apache Spark Structured Streaming and Delta Lake	
+	 Stream-to-Stream Joins: Enable stream-to-stream joins to combine data from two streaming sources. This is useful for scenarios where insights are derived from multiple real-time data streams.
+	 Watermarking for Both Streams: Apply watermarks to both streaming datasets to manage late data and ensure accurate join results. Watermarks help in maintaining the state within a manageable size.
+	 Window-based Joins: Use window-based joins to restrict the join operation to specific time intervals. This reduces the computational complexity and ensures timely processing of data.
+	 Handling State and Memory: Manage the state and memory usage effectively by configuring appropriate state timeout settings. This helps prevent memory overflow and ensures smooth operation.
+	 Join Conditions: Define clear join conditions to ensure that only relevant data is combined. This includes specifying the join keys and any additional filters.
+	 Monitoring Performance: Continuously monitor the performance of stream-to-stream joins using Spark metrics and logs. Identify and address any performance bottlenecks or data issues.
+	 Error Handling and Recovery: Implement robust error handling and recovery mechanisms to manage failures in stream-to-stream joins. This ensures the resilience and reliability of the streaming application
+	
+	streaming_df1 = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "localhost:9092").option("subscribe", "topic1").load()
+	streaming_df2 = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "localhost:9092").option("subscribe", "topic2").load()
+	joined_df = streaming_df1.join(streaming_df2, expr("streaming_df1.id = streaming_df2.id AND streaming_df1.timestamp BETWEEN streaming_df2.timestamp - interval 10 minutes AND streaming_df2.timestamp + interval 10 minutes"))
+	query = joined_df.writeStream.format("console").outputMode("append").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+	
+
+Idempotent Stream Writing with Delta Lake and Apache Spark Structured Streaming
+ Idempotency in Streaming: Ensure idempotent writes to prevent duplicate data entries in the Delta Lake. This is crucial for maintaining data accuracy and consistency in streaming applications.
+ Delta Lake Upserts: Use Delta Lake’s merge operation to perform upserts, ensuring that existing records are updated, and new records are inserted without duplication.
+ Unique Identifiers: Implement unique identifiers for records to facilitate idempotent writes. Use these identifiers to match records during upsert operations.
+ Transactional Guarantees: Leverage Delta Lake’s ACID transaction capabilities to ensure that stream writes are atomic, consistent, isolated, and durable.
+ Conflict Resolution: Define conflict resolution strategies for handling cases where multiple records with the same identifier are processed simultaneously. This ensures data integrity.
+ State Management: Maintain the state of processed records to identify and discard duplicates efficiently. Use checkpoints and state stores to manage this state.
+ Performance Considerations: Optimize the performance of idempotent writes by tuning Spark and Delta Lake configurations. This includes configuring write parallelism and managing transaction log size.
+	from delta.tables import *
+	delta_table = DeltaTable.forPath(spark, "/path/to/delta/table")
+	def upsert_to_delta(microBatchOutputDF, batchId):
+	delta_table.alias("tgt").merge(microBatchOutputDF.alias("src"), "tgt.id = src.id").whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()
+	query = json_df.writeStream.format("delta").foreachBatch(upsert_to_delta).option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+	
+	
+Merging or Applying Change Data Capture on Apache Spark Structured Streaming and Delta Lake	
+	 Change Data Capture (CDC): Implement CDC to capture and apply changes in real-time, ensuring that the Delta Lake reflects the most recent state of the data. This is useful for data synchronization and replication.
+	 Delta Lake Merge Operations: Use Delta Lake’s merge operation to apply changes captured by CDC. This ensures that updates, inserts, and deletes are correctly applied to the Delta Lake.
+	 Streaming Sources for CDC: Configure streaming sources like Kafka or database change logs to capture real-time changes. Ensure that these sources provide reliable change data streams.
+	 Schema Evolution: Manage schema evolution in CDC scenarios to accommodate changes in the data structure. Delta Lake supports schema evolution, ensuring compatibility with evolving data schemas.
+	 Conflict Handling: Implement strategies to handle conflicts that arise during the application of changes. This includes defining rules for resolving update conflicts and managing concurrent modifications.
+	 Performance Optimization: Optimize CDC performance by tuning Spark configurations and Delta Lake settings. This includes managing transaction log size and configuring appropriate partitioning strategies.
+	 Monitoring and Auditing: Continuously monitor CDC processes to ensure that changes are applied accurately and efficiently. Implement auditing mechanisms to track the history of changes applied to the Delta Lake.
+
+	cdc_df = spark.readStream.format("kafka").option("kafka.bootstrap.servers", "localhost:9092").option("subscribe", "cdc_topic").load()
+	cdc_df = cdc_df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+	def apply_cdc(microBatchOutputDF, batchId):
+	delta_table.alias("tgt").merge(microBatchOutputDF.alias("src"), "tgt.id = src.id").whenMatchedUpdateAll().whenNotMatchedInsertAll().execute()
+	cdc_query = cdc_df.writeStream.format("delta").foreachBatch(apply_cdc).option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	cdc_query.awaitTermination()
+	
+Monitoring Real-time Data Processing with Apache Spark Structured Streaming	
+	 Spark UI: Utilize the Spark UI to monitor real-time data processing. The UI provides detailed insights into the performance and health of streaming queries.
+	 Structured Streaming Metrics: Access built-in metrics for structured streaming, such as input rates, processing rates, and latency. Use these metrics to track the performance of your streaming application.
+	 Custom Monitoring: Implement custom monitoring solutions using Spark’s metrics system. Publish metrics to external systems like Prometheus or Grafana for advanced monitoring and alerting.
+	 Logging: Configure logging to capture detailed information about streaming query execution. Use log aggregation tools to analyze logs and troubleshoot issues.
+	 Alerts and Notifications: Set up alerts and notifications to receive real-time updates about the status of your streaming application. This helps in proactive management and quick resolution of issues.
+	 Checkpoint Monitoring: Monitor the health and progress of checkpoints to ensure that your streaming application maintains fault tolerance and state management.
+	 Resource Utilization: Track the resource utilization of your streaming application, including CPU, memory, and network usage. Optimize resource allocation to improve performance and reduce costs.
+
+	# Example code to set up custom metrics in Spark Structured Streaming
+	spark.conf.set("spark.metrics.namespace", "structured_streaming_example")
+	spark.conf.set("spark.metrics.conf", "/path/to/metrics/conf/file")
+	# Example configuration in the metrics conf file
+	# [*.source.jvm]
+	# class=org.apache.spark.metrics.source.JvmSource
+	query = json_df.writeStream.format("delta").outputMode("append").option("checkpointLocation", "/path/to/checkpoint/dir").start()
+	query.awaitTermination()
+		
+		

@@ -1,0 +1,1109 @@
+In Python, a package is a collection of modules, and a module is a file containing Python code, which can define classes, functions, and variables.
+
+Step 1: Create a Package  : A package is a directory that contains a special __init__.py file and can contain multiple modules.
+my_package/
+    my_module.py
+    __init__.py
+
+Step 2: Create a Module # my_module.py
+class MyClass:
+    def __init__(self, name):
+        self.name = name
+    def greet(self):
+        return f"Hello, {self.name}!"
+
+def my_function(x, y):
+    return x + y
+
+Step 3: Create the __init__.py File. The __init__.py file makes the directory a package.
+# __init__.py
+from .my_module import MyClass, my_function
+
+
+Step 4: Use the Package in Your Code . You can now import and use the package, module, class, and function in your code. main.py:
+from my_package import MyClass, my_function
+# Create an instance of MyClass
+obj = MyClass("David")
+print(obj.greet())  # Output: Hello, David!
+
+# Use the function
+result = my_function(5, 3)
+print(result)  # Output: 8
+
+
+Python DataStrcutures:-
+set :
+	- A set in Python is an unordered collection of unique elements. 
+	- Sets are mutable, meaning you can add or remove elements, but each element must be unique and immutable (e.g., numbers, strings, tuples). 
+	- Sets are defined using curly braces {} or the set() function.
+		s3= {1,2,3,'a',True,'Sam',10.55}    	
+		print("Set is unordered ", s3)
+	
+List : 
+	- A list in Python is an ordered collection of elements that can be of different types. 
+	- Lists are mutable, meaning you can change their content by adding, removing, or modifying elements. 
+	- Lists are defined by enclosing the elements in square brackets [] and separating them with commas.
+		l1= [1,2,3,'a',True,'Sam',10.55]        
+		print("List maintains order ", l1)
+	
+Tuple : 
+	- A tuple is an immutable sequence of elements in Python. 
+	- Tuples are similar to lists, but unlike lists, they cannot be changed after their creation. 
+	- Tuples are defined by enclosing the elements in parentheses () and separating them with commas.
+		t1= (1,2,3,'a',True,'Sam',10.55)        
+		print("Tuple maintains order ", t1)
+	
+Dictionary:	
+	- A dictionary in Python is an unordered collection of key-value pairs. 
+	- Each key is unique and is used to access the corresponding value. 
+	- Dictionaries are mutable, meaning you can change their content by adding, removing, or modifying key-value pairs. 
+	- Dictionaries are defined using curly braces {} with key-value pairs separated by colons :
+		d1= {'a' : 'a1' , 1 : "b1" } 			
+		print("dictionary is unordered ", d1)
+
+
+Feature		List							Tuple							Set										Dictionary
+Definition	Ordered collection of elements	Ordered collection of elements	Unordered collection of unique elements	Unordered collection of key-value pairs
+Syntax		[] or list()					() or tuple()					{} or set()								{}
+Mutability	Mutable							Immutable						Mutable									Mutable
+Duplicates	Allowed							Allowed							Not allowed								Keys not allowed, values allowed
+Indexing	Supported						Supported						Not supported							Keys used for accessing values
+Order		Maintained						Maintained						Not maintained							Not maintained
+
+
+============================================================== package / module =================================================================================================================================	
+-> use capital letters for class name -  CamelCase
+-> package / module / function names typically follow the snake_case convention, which means they are written in lowercase with words separated by underscores.  
+   This is in contrast to class names, which use CamelCase
+
+from <<package.modules>>  	 import <<classes, functions , variables>> 
+from pyspark.sql 			 import SparkSession  //Import SparkSession Class from sql module 
+from pyspark.sql   			 import DataFrame     //Import DataFrame    Class from sql module 
+from pyspark.sql.DataFrame   import *  // This is invalid ModuleNotFoundError: No module named 'pyspark.sql.DataFrame' CAnt import from class
+from pyspark.sql.functions   import window,col,when,lit,upper,lower,avg,sum,count,to_date  //Import definitions from functions module 
+from pyspark.sql.types       import StructType, StructField, StringType, IntegerType, DoubleType
+from pyspark.sql.types       import *  //  For Module we can * and not class 
+
+ pyspark.sql.SparkSession :Main entry point for Dataframe SparkSQL functionality
+ pyspark.sql.DataFrame :A distributed collection of data grouped into named columns
+ pyspark.sql.Column : A column expression in a DataFrame. 
+ pyspark.sql.Row : A row of data in a DataFrame.
+ pyspark.sql.GroupedData :Aggregation methods, returned by DataFrame.groupBy()
+ pyspark.sql.DataFrameNaFunctions : Methods for handling missing data (null values).
+ pyspark.sql.DataFrameStatFunctions : Methods for statistics functionality.
+ pyspark.sql.functions : List of built-in functions available for DataFrame.
+ pyspark.sql.types : List of data types available.
+ pyspark.sql.Window : For working with window functions.
+
+
+Some modules present in pyspark package : 
+	pyspark.sql: This module provides the DataFrame and SQL functionalities.
+				pyspark.sql.SparkSession: The entry point to programming Spark with the DataFrame and SQL API.
+				pyspark.sql.DataFrame: A distributed collection of data organized into named columns.
+				pyspark.sql.functions: A collection of built-in functions for DataFrame operations.
+				pyspark.sql.types: Data types used in DataFrame schema.
+	pyspark.streaming: This module provides functionalities for Spark Streaming.
+				pyspark.streaming.StreamingContext: The main entry point for Spark Streaming functionality.
+	pyspark.rdd: This module provides functionalities for Resilient Distributed Datasets (RDDs).
+				pyspark.rdd.RDD: The main class representing an RDD.
+
+
+from pyspark.sql import SparkSession
+	SparkSession is the entry point to programming Spark with the Dataset and DataFrame API.
+	The SparkSession object "SPARK" is automatically created for you when you start a Databricks notebook, so you do not need to create it manually.
+	spark = ( SparkSession
+							.builder
+							.master("local")
+							.appName("Word Count")
+							.config("spark.some.config.option", "some-value")
+							.getOrCreate())
+		SparkSession.builder: This initializes the builder for creating a SparkSession.
+		master("local"): This sets the master URL to connect to. The value "local" means that Spark will run locally with one worker thread. You can also specify 
+							"local[N]" to run locally with N worker threads, or a cluster URL to run on a cluster.
+		appName("Word Count"): This sets the name of the application, which will be displayed in the Spark web UI.
+		config("spark.some.config.option", "some-value"): This sets a configuration option. In this example, it sets a custom configuration option 
+							spark.some.config.option to the value "some-value". You can set various Spark configuration properties using this method.
+		getOrCreate(): This method either retrieves an existing SparkSession or creates a new one if none exists. This ensures that you do not create multiple 
+							SparkSession instances in the same application.
+
+print(spark) # sparkSession
+print(sc)    # sparkContext
+
+
+=================================================  Data Abstractions in Spark ( RDD, DataSet, DataFrame) =====================================================================================================
+
+Spark provides three abstractions for handling data
+
+RDDs : Distributed collections of objects that can be cached in memory across cluster nodes (e.g., if an array is large, it can be distributed across multiple clusters).
+
+DataFrame : DataFrames are distributed collections of data organized into named columns, similar to tables in a relational database. They provide a powerful abstraction that supports structured and semi-structured data with optimized execution through the Catalyst optimizer.
+DataFrames are schema-aware and can be created from various data sources including structured files (CSV, JSON), Hive tables, or external databases, offering SQL-like operations for data manipulation and analysis.
+
+Dataset : Datasets are a type-safe, object-oriented programming interface that provides the benefits of RDDs (static typing and lambda functions) while also leveraging Spark SQL's optimized execution engine.
+
+They offer a unique combination of type safety and ease of use, making them particularly useful for applications where type safety is important and the data fits into well-defined schemas using case classes in Scala or Java beans.
+
+				Comparison of Spark Data Abstractions
+Feature				RDD						DataFrame						Dataset
+Type Safety			Type-safe				Not type-safe					Type-safe
+Schema				No schema				Schema-based					Schema-based
+API Style			Functional API			Domain-specific language (DSL)	Both functional and DSL
+Optimization		Basic					Catalyst Optimizer				Catalyst Optimizer
+Memory Usage		High					Efficient						Moderate
+Serialization		Java Serialization		Custom encoders					Custom encoders
+Language Support	All Spark languages		All Spark languages				Scala and Java only
+
+
+
+				Use Case Scenarios and Recommendations
+RDD	
+	– Low-level transformations 
+	– Custom data types 
+	– Legacy code maintenance	
+	– Complete control over data processing 
+	– When working with non-structured data 
+	– Need for custom optimization
+
+DataFrame	
+	– SQL-like operations 
+	– Machine learning pipelines 
+	– Structured data processing	
+	– Better performance through optimization 
+	– Familiar SQL-like interface 
+	– Integration with BI tools
+
+Dataset	
+	– Complex business logic 
+	– Type-safe operations 
+	– Domain object manipulation	
+	– Compile-time type safety 
+	– Object-oriented programming 
+	– Balance of performance and control
+
+Key Takeaways:
+	Use RDDs when you need low-level control and working with unstructured data
+	Choose DataFrames for structured data and when performance is critical
+	Opt for Datasets when you need both type safety and performance optimization
+
+
+			Initialization and Operations Examples
+Operation		RDD							DataFrame					Dataset
+Creation		sc.parallelize(List(1,2,3))	spark.createDataFrame(data)	spark.createDataset(data)
+Reading Files	sc.textFile("path")			spark.read.csv("path")		spark.read.csv("path").as[Case]
+Filtering		rdd.filter(x => x > 10)		df.filter($"col" > 10)		ds.filter(_.value > 10)
+Mapping			rdd.map(x => x * 2)			df.select($"col" * 2)		ds.map(x => x * 2)
+Grouping		rdd.groupBy(x => x)			df.groupBy("col")			ds.groupByKey(_.key)
+
+==============================================================  ways of creating dataframe   =======================================================================================================
+
+spark.createDataFrame 
+		- DataSource 
+			- Panda Integrations (Pandas DataFrame)
+			- List Based Structures (Dictionaries, Tuples, Lists)	
+		- Schema 
+			- Explicitly specify schema (Primitive DataType, String Schema,Struct Type)
+				- External Metadata spark.createDataframe(data,_schemafromjson)
+				- DDL String Schema spark.createDataframe(data,"id int, name string") # Table Schema 
+				- use StructType    spark.createDataframe(data,StructType([...])
+			- Auto inferred : Let pyspark automatically infer schema  (None , Column Name List)
+				1.Dictionary / Pandas :-  spark.createDataFrame(data,None)    // Default Inference (None): Spark tries to guess the data types by itself and uses _1, _2, etc. as column names.
+				2.List / Tuple :  spark.createDataFrame(data,['col1','col2']) // Named Inference (List of names): You provide just the column names in a list, and Spark still figures out the data types automatically.
+
+Signature: def createDataFrame(
+									data: Union[
+												'RDD[Any]', 
+												Iterable[Any], 
+												'PandasDataFrameLike', 
+												'ArrayLike'
+												], 
+									schema: Optional[Union[AtomicType, StructType, str]]=None, 
+									samplingRatio: Optional[float]=None, 
+									verifySchema: bool=True
+								) 
+Example :- 								
+		from pyspark.sql.types import StructType, StructField, StringType, IntegerType
+		# List of Tuples
+		data = [ (1, 'a'),  (2, 'b' ),  (3, 'c')]
+		schema = "id int, name string" # Table Schema
+		display(spark.createDataFrame(data, schema))
+		structschema = StructType( [  StructField("id", IntegerType(), True), StructField("name", StringType(), True) ] ) # Struct Schema
+		display(spark.createDataFrame(data, structschema))
+
+From a Data Sources like file spark.read() 
+	   Database spark.sql.table()
+
+============================================================  Data Types of DataFrame ====================================================================
+
+Spark SQL Type	pyspark.sql.types DataType	Python Base Equivalent
+TINYINT			ByteType					int or long
+SMALLINT		ShortType					int or long
+INT				IntegerType					int or long
+BIGINT			LongType					long
+FLOAT			FloatType					float
+DOUBLE			DoubleType					float
+DECIMAL(p,s)	DecimalType					decimal.Decimal
+STRING			StringType					string
+BINARY			BinaryType					bytearray
+BOOLEAN			BooleanType					bool
+TIMESTAMP		TimestampType				datetime.datetime
+TIMESTAMP_NTZ	TimestampNTZType			datetime.datetime
+DATE			DateType					datetime.date
+year-month 		interval					YearMonthIntervalType	Not supported
+day-time 		interval					DayTimeIntervalType	datetime.timedelta
+ARRAY			ArrayType					list, tuple, or array   (ordered elements of same type)
+MAP				MapType						dict
+STRUCT			StructType					list or tuple or dict or namedTuple
+STRUCTFIELD		StructField					The value type of the data type of this field (e.g., Int for a StructField with the data type IntegerType)
+VARIANT			VariantType					VariantVal
+OBJECT			Not Supported				Not supported
+
+===============================================================================================================================================================
+
+
+
+
+=============================================================  Spark Read APIs  ==============================================================
+
+	- Spark read APIs to read files of different formats. 
+	- All APIs are exposed under DataFrameReader : spark.read()
+
+Two Syntax Styles for Reading Data :
+	Generic API :
+		SparkSession(spark)
+			.read()								// Returns a DataFrameReader object, which is the entry point for loading data into Spark
+			.format(<<"fileTypes">>) 			// Specifies the format of the input data (CSV, JSON, Parquet, ORC,etc.)
+			.<<option(Key,Value)/options()>>	// Sets various configuration parameters for reading the data (e.g., header, delimiter, quote character)
+			.<<schema("schemalocation")>> 		// Defines the structure of the resulting DataFrame, including column names and data types
+													- Explicit Schema Definition : using .schema() call
+													- Inferred Schema 			 : using inferSchema=True option 	
+			.load("location of file/directory",<<Key=value>>,<<Key=value>>)		// Executes the read operation with all the specified parameters and returns a DataFrame with the loaded data
+		example :-  spark.read.format(csv).option('header',true).schema(/schema/employeeschema).load(/data/emplyee.csv)
+
+	Format-Specific API :
+		spark.read.<<fileType>>("location of file/directory",<<Key=value>>,<<Key=value>>)
+		example :-  spark.read.csv('/data/emplyee.csv',header=true)
+
+	fileType:			
+		text 	- to read single column data from text files as well as reading each of the whole text file as one record.
+		csv 	- to read text files with delimiters. Default is a comma, but we can use other delimiters as well.
+		json 	- to read data from JSON files
+		orc 	- to read data from ORC files
+		parquet - to read data from Parquet files
+		xml     - to read data from xml files
+
+    Options:
+		CSV Files:
+			header=True : first line as column names
+			wildcards   : read multiple CSV files using wildcards or a list of paths
+			sep : for delimiter
+			quote : for quoting
+			escape : for escaping characters.
+		JSON Files:
+			Single-Line JSON: Use spark.read.json to parse single-line JSON files. Spark infers the schema and data types automatically	
+			Multi-Line JSON: Handle multi-line JSON files by setting the multiLine option to True, allowing to parse complex JSON structures
+		    Reading Nested JSON: Use dot notation to access nested fields
+		    Handling Missing Values: Manage missing or null values in JSON data by using options like dropFieldIfAllNull	
+		Parquet Files:
+			Automatic Partition Discovery: Spark automatically discovers and reads partitioned Parquet files, allowing for efficient querying
+			Compression Options: Specify compression codecs such as snappy, gzip, or lzo to optimize storage space and read performance
+		XML Files:
+			Reading XML Files: Use the spark-xml library to parse XML files. Configure row tags to identify elements within the XML structure
+			Attribute and Value Tags: Customize attribute prefixes and value tags to handle XML attributes and element values effectively
+			Performance Considerations: Optimize XML parsing performance by configuring parallelism and memory settings
+
+	Schema:
+		# Define explicit schema using StructType
+			customer_schema = StructType([
+						StructField("customer_id", IntegerType(), False),
+						StructField("tax_id", StringType(), True),
+						StructField("tax_code", StringType(), True),
+						StructField("customer_name", StringType(), True),
+					])
+		# Define explicit schema using Table Schema Like 		
+			employee_schema = "EMPNO string, ENAME string, SAL double, UPDATED_DATE date, _corrupt_record string"
+
+   Examples :-
+	spark.read.csv("dbfs:/FileStore/FileStore/employee.csv")
+	spark.read.csv("path/to/csvfile.csv", header=True, inferSchema=True)
+	spark.read.option("multiLine", True).json("path/to/multiline.json")
+	spark.read.format("xml").option("rowTag", "book").load("path/to/xmlfile.xml")			
+	spark.read.option("header", True).option("inferSchema", True).option("delimiter", ":").option("nullValue", "NA").csv("dbfs:/FileStore/FileStore/employee.csv")		  
+	spark.read.schema(_schema).format("csv").load("dbfs:/FileStore/FileStore/employee.csv")
+    spark.read.load("dbfs:/FileStore/FileStore/employee.csv",format="csv",sep=",",header="true")
+	spark.read.option("header", "true").schema(customer_schema).format("csv").load("/Volumes/dbacademy_retail/v01/source_files/customers.csv")
+	spark.read.schema(_schema_incorrect_datafile).option("mode","DROPMALFORMED").load("dbfs:/FileStore/FileStore/bad_data_csv.csv",format="csv",sep=",",header="true")
+					_options = {
+								"mode"   : "DROPMALFORMED",
+								"header" : "true",
+								"sep"    : ","
+							}
+	spark.read.schema(_schema_incorrect_datafile).options(_options).load("dbfs:/FileStore/FileStore/bad_data_csv.csv",format="csv") 
+    # based on the column names spark will automatically map the columns
+	_schema = "customer_id string, order_id string, contact array<long>"  
+	spark.read.format("json").schema(_schema).load("dbfs:/FileStore/FileStore/inbound/order_singleline.json")
+	_schema = "contact array<string>, customer_id string, order_id string, 
+	order_line_items array<struct<amount double, item_id string, qty long>>"
+	spark.read.format("json").schema(_schema).load("dbfs:/FileStore/FileStore/inbound/order_singleline.json")
+	
+Reading Managed Tables :
+	The spark.read.table method in PySpark is used to read data from a table into a DataFrame. 
+	This method is particularly useful when working with tables in a metastore, such as Hive or Databricks' Unity Catalog. 
+	
+	spark.read.table("database_name.table_name")
+	
+	Key Points
+		This method is useful for reading data from tables managed by a metastore.
+		It can be used with both batch and streaming queries.
+		The table name can be fully qualified with catalog and schema names.
+	
+=============================================================  Spark Write APIs  ==============================================================
+
+DataFrameWriter  spark.write()
+We can write the contents of our DataFrame to a filesystem in various formats using the write and save methods
+
+df.write.
+		.<<writting approaches>> - Generic API .format(<<parquet-default,csv,json,orc,jdbc>>).save() / Format Specific .csv()
+		.<<Key methods>> 
+			 .mode()   		// controls behaviour of existing data 
+			 .paritionBy()  // defines physical data organization 
+			 .bucketBy()	// organize data into fixed buckets
+			 .option()/.options()
+			 .save			//  executes write operation 
+			
+{text/sortBy/saveAsTables/ave/partitionBy/parquet/orc/option/options/mode/json/jdbc/insertInto/format/csv/bucketBy}
+
+Generic API  		 :  spark.write.format("csv").mode('overwrite').option("header", "true").save("path/to/xmlfile.xml")	 			
+Format Specific API  :  spark.write.csv("path/to/csvfile.csv", header=True, mode= 'overwrite')
+
+Examples :-
+	df.write  						\\ Returns a DataFrameWriter object,which is the entry point for saving data from Spark
+			.format("csv") 			\\ Specifies the format of the output data (Parquet, CSV, JSON, ORC, etc.)
+ 			.mode("overwrite") 		\\ Sets the behavior when data already exists at the specified location (overwrite, append, ignore, error)
+									   - overwrite : mode completely replaces existing data with new data, useful for full refreshes
+									   - append :  mode adds new records alongside existing ones, ideal for incremental updates
+									   - ignore :  mode avoids writing when data already exists at the destination
+									   - error :   mode (default) fails the operation if data already exists, providing safe execution
+			.partitionBy('column')	\\ Defines how to partition data for more efficient storage and querying
+			.option("header",True) 	\\  
+			.option("dateFormat", "yyyy-MM-dd")
+			.option("path", 'dbfs:/FileStore/FileStore/outbound/')
+			.option("sep", ",") 
+			.save(cmode='append', sep=';', compression='gzip', encoding='cp1252')		 # Save as gip 	  
+	
+	# Writing the contents of a DataFrame to a Table
+	df.write.saveAsTable("customers_ddl_df_table")	
+	
+	# Alternatively you can use the writeTo method which invokes the DataFrameWriterV2 
+	customers_ddl_df.writeTo(                              
+		f"{DA.catalog_name}.{DA.schema_name}.customers_ddl_df_table"
+	).createOrReplace()
+	# you have options to partition the table, as well as append, overwrite or createOrReplace
+	
+	
+
+=============================================================  Data Transformation & Actions  ==============================================================
+
+Transformations
+	Definition: Transformations are operations that create a new DataFrame or RDD from an existing one. They are lazy, meaning they do not compute their results immediately. Instead, they build up a logical plan that will be executed when an action is called.
+	Examples: select(), filter(), groupBy(), withColumn(), join(), union(), distinct(), orderBy(), repartition(), coalesce(), etc.
+
+
+Actions
+	Definition: Actions are operations that trigger the execution of the transformations to return a result to the driver program or write data to an external storage system. They are eager, meaning they compute their results immediately.
+	Examples: show(), collect(), count(), take(), head(), first(), foreach(), reduce(), toLocalIterator(), toPandas(), write, etc.
+
+How to Identify
+	Transformations: If the operation returns a new DataFrame or RDD and does not immediately compute the result, it is a transformation.
+	Actions: If the operation triggers computation and returns a result (e.g., a value, a list, or writes data to storage), it is an action.
+
+
+
+Transformation						Description
+select(*cols)						Selects a set of columns.
+filter(condition)					Filters rows using the given condition.
+where(condition)					Same as filter().
+groupBy(*cols)						Groups the DataFrame using the specified columns.
+agg(*exprs)							Aggregates data after grouping.
+withColumn(colName, col)			Adds a new column or replaces an existing column.
+withColumnRenamed(existing, new)	Renames a column.
+drop(*cols)							Drops one or more columns.
+join(other, on, how)				Joins with another DataFrame.
+union(other)						Returns a new DataFrame containing union of rows in this and another DataFrame.
+distinct()							Returns a new DataFrame with distinct rows.
+orderBy(*cols, **kwargs)			Returns a new DataFrame sorted by the specified column(s).
+sort(*cols, **kwargs)				Same as orderBy().
+limit(n)							Limits the result count to the number specified.
+repartition(numPartitions, *cols)	Returns a new DataFrame partitioned by the given columns.
+coalesce(numPartitions)				Reduces the number of partitions in the DataFrame.
+cache()								Caches the DataFrame in memory.
+persist(storageLevel)				Persists the DataFrame with the specified storage level.
+unpersist()							Unpersists the DataFrame from memory and disk.
+crossJoin(other)					Returns the Cartesian product with another DataFrame.
+dropDuplicates(subset)				Drops duplicate rows based on the specified columns.
+alias(alias)						Returns a new DataFrame with an alias set.
+selectExpr(*expr)					Selects a set of SQL expressions.
+sample(withReplacement, fraction, 
+seed)								Returns a sampled subset of the DataFrame.
+randomSplit(weights, seed)			Splits the DataFrame into multiple DataFrames.
+describe(*cols)						Computes basic statistics for numeric columns.
+summary(*statistics)				Computes specified statistics for numeric and string columns.
+crosstab(col1, col2)				Computes a pair-wise frequency table of the given columns.
+stat.corr(col1, col2)				Computes the correlation of two columns.
+stat.cov(col1, col2)				Computes the covariance of two columns.
+stat.freqItems(cols, support)		Finds frequent items for columns.
+stat.approxQuantile(col, 
+probabilities, relError)			Calculates the approximate quantiles of numerical columns.
+
+
+Action								Description
+show(n, truncate)					Displays the top n rows of the DataFrame.
+collect()							Returns all the rows as a list of Row.
+count()								Returns the number of rows in the DataFrame.
+take(n)								Returns the first n rows as a list of Row.
+head(n)								Returns the first n rows as a list of Row.
+first()								Returns the first row as a Row.
+foreach(f)							Applies a function to each row.
+foreachPartition(f)					Applies a function to each partition of the DataFrame.
+reduce(f)							Reduces the elements of the DataFrame using the specified binary function.
+toLocalIterator()					Returns an iterator that contains all of the rows in the DataFrame.
+toPandas()							Converts the DataFrame to a Pandas DataFrame.
+write								Interface for saving the content of the DataFrame out into external storage.
+
+
+🔍  DataExploration  
+		df.schema  
+		df.printSchema() # # Displays schema in Struct Format
+		df.describe('age').show() # Summary statistics
+		df.limit(2).show()
+		df.show(n=20, truncate=True) # Display rows
+		df.columns # List column names
+		df.dtypes # List column data types
+		df.head(n) / df.take(n) # First n rows
+		df.first()
+		df.count() # Row count
+		df.distinct().count() # Count of distinct rows
+
+🔧 Column Operations
+		df.select("col1", "col2") # Select columns
+		df.select(col("name").alias("customer_name"))
+		df.selectExpr("year", "month", "cast(depttime as int) as dtime").createOrReplaceTemoView("student")
+		df.withColumn("new_col", col("col1") + 10) # Add/modify column
+		df.withColumnRenamed("old", "new") # Rename column
+		df.drop("col1") # Drop column
+		alias()  		 	 // col("name").alias("customer_name")
+		cast()/astype()  	 // col("name").cast(IntegerType())
+		functions :- col, when , lpad, substr, lit
+		df.fillna(value = values)  / df.na.fill(value=values)
+				// This method call replaces NaN values in the DataFrame df according to the values dictionary 
+							and returns a new DataFrame df_filled with the NaN values replaced.
+				data = [ Row(A=1, B=None, C=3), Row(A=None, B=2, C=None), Row(A=4, B=None, C=6)]
+				# None is a special constant that represents the absence of a value or a null value. It is an object of its own datatype, the NoneType. 
+				# None is often used to signify 'nothing' or 'no value here
+				df = spark.createDataFrame(data)
+				# Replace NaN values with specified values
+				values = {"A": 0, "B": 1, "C": 2}
+				df_filled = df.fillna(value=values)
+		
+		df.dropna('all/any') / df.na.drop()
+			 - Drop Null Values: Remove rows with null values using dropna method .
+			   The how parameter specifies the condition for dropping rows. It can take two values: 'any' or 'all'
+			   how: This parameter determines the condition for dropping rows.
+					'any': Drop a row if it contains any NaN values.
+					'all': Drop a row only if all its values are NaN.
+		  	NOTE :- 	
+			   split_df.na.drop(): This removes any row that contains at least one null value in any column.
+			   split_df.na.drop("all"): This removes only those rows where all columns are null.	
+				
+			   data = [Row(A=1, B=None, C=3), Row(A=None, B=2, C=None), Row(A=4, B=None, C=6), Row(A=None, B=None, C=None)]
+			   df = spark.createDataFrame(data)
+			   df_dropped_any = df.dropna(how='any')
+			   df_dropped_all = df.dropna(how='all')
+				
+			# To drop rows where any specified columns are null, we can use the na.drop DataFrame method
+			   non_null_flights_df = flights_required_cols_df.na.drop(how='any',subset=['CRSElapsedTime'])	
+			   # subset=['CRSElapsedTime']: This parameter specifies the columns to consider for the null check. 
+			   # In this case, only the CRSElapsedTime column is considered. 
+			   
+	  na.replace()
+			- Replace Null Values: Use na.replace method to replace null values with  specified values across DataFrame.
+				df_replaced = df.na.replace(to_replace="old_value",  value="new_value",  subset=["B"])
+	isNull and isNotNull // You can use isNull() to select rows where a column has null values, and isNotNull() to select rows where a column does not have null values
+	count(col) // count function in PySpark to count the number of non-null values in a specific column
+
+
+🧹 ** Filtering / Conditional Logic**
+		df.filter(col("age") > 30) # Filter rows
+		df.where(col("status") == "active") # Same as filter()
+		df.dropDuplicates(["id", "date"]) # Remove duplicates
+		logical operators like &, |, and ~.
+		range-based filtering using conditions like between and isin.
+
+
+📊Sorting and Limiting
+  The df.sort method in PySpark is used to sort the rows of a DataFrame based on one or more columns. 
+  It is an alias for the orderBy method and can be used interchangeably.
+	- df.sort(col("order_id").desc())
+	- df.orderBy(col("order_id").asc())
+    - df.sort(col("order_id").asc(), col("order_timestamp").desc())
+
+
+🔣String :
+	- contains, startswith, endswith , concat, substring, and upper
+	- regexp_replace // is used to replace substrings in a string that match a regular expression pattern with a specified replacement string.
+			regexp_replace(str, pattern, replacement)
+			str: The input string column.
+			pattern: The regular expression pattern to match.
+			replacement: The string to replace the matched substrings.
+
+
+📅 Date/Time Functions
+	- current_date, current_timestamp,current_timezone , datediff, to_date, to_timestamp , try_to_timestamp , add_months 
+		df.select(
+			  current_date().alias("current_date"),
+			  current_timestamp().alias("current_timestamp"),
+			  current_timezone().alias("current_timezone"),
+			).limit(1).display()
+
+		df.select(          
+			  to_date(col("order_timestamp"),"yyyy-MM-dd HH:mm:ss").alias("order_date"),
+			  add_months(to_date(col("order_timestamp"),"yyyy-MM-dd HH:mm:ss"),1).alias("addmonths"),
+			  datediff(current_date(),to_date(col("order_timestamp"),"yyyy-MM-dd HH:mm:ss")).alias("datediff"),
+			  col("order_timestamp").alias("order_str_timestamp"),
+			  to_timestamp(col("order_timestamp"),"yyyy-MM-dd HH:mm:ss").alias("order_timestamp")
+			).display()
+	
+
+Joins 
+	Basic Joins: 
+		Join multiple DataFrames using join the method. Specify join conditions and join types like inner, left, right, and outer.
+			 join(other, on=None, how=None)[source]
+				* other – Right side of the join
+				* on –  a string for the join column name, 
+						a list of column names, 
+						a join expression (Column), 
+						a list of Columns. 
+						If on is a string or a list of strings indicating the name of the join column(s), 
+						the column(s) must exist on both sides, and this performs an equi-join.
+				* how – str, default inner. Must be one of: `inner`, `cross`, `outer`, `full`, 
+															`fullouter`, `full_outer`, `left`, 
+															`leftouter`, `left_outer`, `right`, 
+															`rightouter`, `right_outer`, `semi`, 
+															`leftsemi`, `left_semi`, `anti`, `leftanti` and `left_anti`.
+		
+		INNER JOIN : The inner join is the default join in Spark SQL. It selects rows that have matching values in both relations.
+		FULL JOIN  / FULL OUTER JOIN : 
+							- A full join returns all values from both relations, appending NULL values on the side that does not have a match. It is also referred to as a full outer join.
+							- Outer joins evaluate the keys in both of the DataFrames or tables and includes (and joins together) the rows that evaluate to true or false. 
+							- If there is no equivalent row in either the left or right DataFrame, Spark will insert null:
+							- Outer joins (keep rows with keys in either the left or right datasets)		
+		CROSS JOIN : A cross join returns the Cartesian product of two relations.
+					 Cross (Cartesian) Joins 
+					    - emp_csv.crossJoin(dept_csv).show()
+						- The last of our joins are cross-joins or cartesian products. Cross-joins in simplest terms are inner joins that do not specify a predicate. Cross joins will join every single row in the left DataFrame to ever single row in the right DataFrame
+						- Cross (or Cartesian) joins (match every row in the left dataset with every row in the right dataset)
+		LEFT JOIN / Left Outer Join : A left join returns all values from the left relation and the matched values from the right relation, or appends NULL if there is no match. It is also referred to as a left outer join.
+						- Left outer joins evaluate the keys in both of the DataFrames or tables and includes all rows from the left DataFrame as well as any rows in the right DataFrame that have a match in the left DataFrame.
+						- Left outer joins (keep rows with keys in the left dataset)		
+		RIGHT JOIN / Right Outer JOIN : A right join returns all values from the right relation and the matched values from the left relation, or appends NULL if there is no match. It is also referred to as a right outer join
+						- Right outer joins evaluate the keys in both of the DataFrames or tables and includes all rows from the right DataFrame as well as any rows in the left DataFrame that have a match in the right DataFrame.
+						- Right outer joins (keep rows with keys in the right dataset)
+		SEMI JOIN / LEFT SEMI JOIN : A semi join returns values from the left side of the relation that has a match with the right. It is also referred to as a left semi join.
+						- Semi joins are a bit of a departure from the other joins. They do not actually include any values from the right DataFrame. 
+							They only compare values to see if the value exists in the second DataFrame. 
+							If the value does exist, those rows will be kept in the result, even if there are duplicate keys in the left DataFrame.
+						- Left semi joins (keep the rows in the left, and only the left, dataset where the key appears in the right dataset)
+							The essential differences between a semi join and a regular join are:
+								Semi join either returns each row from input A, or it does not. No row duplication can occur.
+								Regular join duplicates rows if there are multiple matches on the join predicate.
+								Semi join is defined to only return columns from input A.
+								Regular join may return columns from either (or both) join inputs.
+		ANTI JOIN / Left Anti Join : An anti join returns values from the left relation that has no match with the right. It is also referred to as a left anti join.
+						- Left anti joins are the opposite of left semi joins. Like left semi joins, they do not actually include any values from the right DataFrame.
+						- They only compare values to see if the value exists in the second DataFrame.
+						- However, rather than keeping the values that exist in the second DataFrame, they keep only the values that do not have a corresponding key in the second DataFrame.
+						- Left anti joins (keep the rows in the left, and only the left, dataset where they do not appear in the right dataset)
+		
+		Natural Joins
+			- Natural joins make implicit guesses at the columns on which you would like to join. It finds matching columns and returns the results. Left, right, and outer natural joins are all supported.
+			- Natural joins (perform a join by implicitly matching the columns between the two datasets with the same names)
+		
+		Broadcast Joins: 
+			- A broadcast join is a type of join operation in Apache Spark where one of the tables (usually the smaller one) is broadcasted to all the worker nodes. 
+			- This allows the join to be performed locally on each worker node, which can significantly improve performance for certain types of joins.
+			How Broadcast Join Works
+				- Broadcasting the Smaller Table: The smaller table is sent to all the worker nodes in the cluster.
+				- Local Join: Each worker node performs the join operation locally using the broadcasted table and its partition of the larger table.
+				- Aggregation: The results from each worker node are then aggregated to produce the final result.
+			When to Use Broadcast Join
+				- Small Table: When one of the tables is small enough to fit in memory on each worker node.
+				- Performance: To avoid the cost of shuffling large amounts of data across the network.
+			Example :- 	
+					- cust_df.join(broadcast(ord_df), cust_df['customer_id'] == ord_df['customer_id']) 
+					- This persists (or caches) the emp_csv DataFrame in memory. This can improve performance for subsequent operations on the DataFrame by avoiding recomputation.
+						import pyspark.sql.functions as f
+						emp_csv.persist()
+						emp_csv.filter(f.col('comm').isNull()).select('*').show() # Marks a DataFrame as small enough for use in broadcast joins.
+
+		Multi-way Joins: 
+			- Combine more than two DataFrames in a single join operation. Chain multiple join methods together.
+		
+		#### Join Hints Types
+			#### BROADCAST
+				* Suggests that Spark use broadcast join. The join side with the hint will be broadcast regardless of autoBroadcastJoinThreshold. If both sides of the join have the broadcast hints, the one with the smaller size (based on stats) will be broadcast. The aliases for BROADCAST are BROADCASTJOIN and MAPJOIN.
+			#### MERGE
+				* Suggests that Spark use shuffle sort merge join. The aliases for MERGE are SHUFFLE_MERGE and MERGEJOIN.
+			#### SHUFFLE_HASH
+				* Suggests that Spark use shuffle hash join. If both sides have the shuffle hash hints, Spark chooses the smaller side (based on stats) as the build side.
+			#### SHUFFLE_REPLICATE_NL
+				* Suggests that Spark use shuffle-and-replicate nested loop join.
+		
+		Examples :- 
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'inner').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'full').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'cross').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'left').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'right').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'semi').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id'], 'anti').display()
+			#cust_df.join(ord_df, cust_df['customer_id'] == ord_df['customer_id']).explain() # inner join 
+			#cust_df.join(broadcast(ord_df), cust_df['customer_id'] == ord_df['customer_id']) 
+			# emp_csv.persist() \ emp_csv.filter(f.col('comm').isNull()).select('*').show()  # inmemory performance
+						
+		
+Set / Relational Operators : UNION , INTERSECTION , SUBTRACTION
+	**UNION:**   like SUM  
+			- Combines the results of two queries and returns all ***distinct*** rows from both queries.
+			- If you want to include duplicate rows, you can use ***UNION ALL***.
+
+	**INTERSECTION:**   like COMMON 
+			- Returns only the rows that are present in both queries.
+			- Not all SQL databases support the INTERSECT operator.
+
+	**SUBTRACTION (EXCEPT or MINUS):**   
+			- Returns the rows from the first query that are not present in the second query.
+			- The keyword EXCEPT is used in some databases like PostgreSQL, while MINUS is used in others like Oracle.
+
+		# Create sample DataFrames
+		df1 = spark.createDataFrame([(1, 'Alice'),	(2, 'Bob'),(3, 'Charlie')], ['id', 'name'])
+		df2 = spark.createDataFrame([(2, 'Bob'),(3, 'Charlie'),(4, 'David')], ['id', 'name'])
+
+		# UNION: Combines the results of two DataFrames and returns all distinct rows
+		union_df = df1.union(df2).distinct()  
+
+		# INTERSECTION: Returns only the rows that are present in both DataFrames
+		intersection_df = df1.intersect(df2)
+		
+		# SUBTRACTION (EXCEPT): Returns the rows from the first DataFrame that are not present in the second DataFrame
+		subtraction_df = df1.subtract(df2)
+		
+🔄 Grouping and Aggregation - 
+	- Group By Aggregations: Perform aggregations using groupBy and agg methods. 
+	- Aggregation Calculate sum, avg, count , min , max 
+		df.groupBy("department").agg(avg("salary")) # Group and aggregate
+		df.groupBy("gender").count() 				# Count per group
+		df.agg({"salary": "max"}) 					# Aggregate without grouping
+	
+	NOTE :- Use agg method to aggregate multiple aggregations at once
+	    df.groupby("zip").agg(
+			count(*).alias("totaltrips"),
+			round(avg("tripdistance"),2).alias("avgdistance"),
+			round(sum("fareamount"),2).alias("totalfareamt")
+		)
+
+============================================================Pivot Tables =================================================================================
+
+Pivot Tables: 
+	- Create pivot tables using pivot method to transform row data into columns.
+	- The pivot method in Spark allows you to transform row data into columnar format, creating a cross-tabulation. 
+	- This is particularly useful for feature engineering when analyzing categorical data 
+		or when you need to reshape your data for reporting or visualization
+
+    - In PySpark, the pivot function is used to rotate or transform data from rows to columns, effectively creating a pivot table. 
+	- This is useful for summarizing data and making it easier to analyze.
+
+	from pyspark.sql.functions import sum, col , count
+	df.groupBy('customer_id'). \
+    pivot('order_status'). \
+    agg(sum('total_amount').alias('totalAmount'),count('order_id').alias('orderCount')). \
+    display()	
+
+========================== Window functions with Apache Spark====================================================================
+
+Window functions in PySpark are powerful tools that allow you to perform row-wise operations over a group of rows, similar to SQL OVER() clause.
+
+They don’t reduce rows like groupBy() — instead, they preserve the original row structure and add new calculated columns.
+
+🧠 What is a Window Function? It performs calculations across a "window" of rows, defined by:
+	- Partition (like GROUP BY)
+	- Order (to define row order)
+	- Frame (range of rows to consider, default is current row)
+
+✅ Common Window Functions in PySpark
+| Function            | Description                       |
+| ------------------- | --------------------------------- |
+| `row_number()`      | Row number per partition          |
+| `rank()`            | Rank with gaps                    |
+| `dense_rank()`      | Rank without gaps                 |
+| `lag(col, offset)`  | Value from a previous row         |
+| `lead(col, offset)` | Value from a next row             |
+| `sum()`, `avg()`    | Rolling aggregation within window |
+
+| Concept       | Usage Example                                 |
+| ------------- | --------------------------------------------- |
+| `partitionBy` | Like GROUP BY — defines data groups           |
+| `orderBy`     | Defines row order within each partition       |
+| `rowsBetween` | Defines the frame (row range) for aggregation |
+
+
+🧾 Summary <br>
+	✅ Use Window from pyspark.sql.window <br>
+	✅ Define window with partitionBy() and orderBy() <br>
+	✅ Use functions like row_number(), rank(), sum(), lag() over the window <br>
+	❗Window functions do not remove rows — they add a new column <br>
+
+
+Window Functions: 
+	- Ranking Functions: 
+		  - 	rank
+		  - 	dense_rank
+		  - 	row_number
+	- Apply window functions for operations like ranking, cumulative sums, and moving averages , calculate running totals, ranks.
+	- Define window specifications with partitionBy and orderBy
+	- Aggregate Functions: Apply aggregate functions within windows using sum, avg, min, max, and count.	
+	- Lead and Lag Functions:   
+			Use lead and lag functions to access subsequent and previous rows within partitions.
+	- Row and Range Windows: 
+			Define windows based on row numbers or value ranges using rowsBetween and rangeBetween.
+
+	from pyspark.sql import Window
+	from pyspark.sql.functions import rank, dense_rank, row_number , desc
+
+		# Sample data
+		data = [("A1", "Sam", 100),		("A1", "Raj", 200),		("A1", "babu", 200),	("A1", "Kumar" , 100),
+				("A2", "sandeep", 100),	("A2", "pushpa", 200),	("A2", "joy" , 200),	("A2", "joseph" , 300),
+				("A3", "mary" , 100),	("A3", "mani" , 100),	("A3", "jack" , 300)]
+
+		# Create DataFrame
+		df = spark.createDataFrame(data, ["class" , "Name", "totalmarks"])
+
+		# Define window specification
+		window_spec = Window.partitionBy("class").orderBy(desc("totalmarks"))
+
+		# Apply window functions
+		df_with_ranks = df.select(
+			"class",
+			"Name",
+			"totalmarks",
+			rank().over(window_spec).alias("rank"),
+			dense_rank().over(window_spec).alias("dense_rank"),
+			row_number().over(window_spec).alias("row_number")
+		)
+
+		# Display the result
+		display(df_with_ranks)
+	 
+	NOTE :- 
+	Rank : Skips number In Each Partition incase repeating ordeby element
+	Dense Rank : Does not skip the number in each partition incase repeating elements of orderBy
+
+	 class	Name	totalmarks	rank	dense_rank	row_number
+		A1	Raj		200			1		1			1
+		A1	babu	200			1		1			2
+		A1	Sam		100			3		2			3
+		A1	Kumar	100			3		2			4
+		A2	joseph	300			1		1			1
+		A2	pushpa	200			2		2			2
+		A2	joy		200			2		2			3
+		A2	sandeep	100			4		3			4
+		A3	jack	300			1		1			1
+		A3	mary	100			2		2			2
+		A3	mani	100			2		2			3
+
+	df_with_ranks.filter(col('dense_rank') == 1).orderBy(desc("totalmarks")).display()  // First highest marks
+		class	Name	totalmarks	rank	dense_rank	row_number
+		A2		joseph	300			1		1			1
+		A3		jack	300			1		1			1
+		A1		Raj		200			1		1			1
+		A1		babu	200			1		1			2
+	
+	%sql
+	SELECT
+		customer_id,order_id,total_amount,rank,dense_rank,row_number
+		FROM (
+				SELECT 	customer_id,order_id,total_amount,
+						RANK()       OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS rank,
+						DENSE_RANK() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS dense_rank,
+						ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY total_amount DESC) AS row_number
+				FROM workspace.sparkassociate.gizmobox_orders_json
+			) subquery
+	WHERE dense_rank = 1;
+
+In SQL, LEAD and LAG are window functions that allow you to access data from subsequent or preceding rows within the same result set, respectively. These functions are useful for comparing values in different rows.
+	- The LEAD function provides access to a subsequent row's data without the need for a self-join.
+	- The LAG function provides access to a preceding row's data without the need for a self-join.
+
+	SELECT
+		customer_id,
+		order_id,
+		total_amount,
+		LEAD(total_amount, 1) OVER (PARTITION BY customer_id ORDER BY order_date) AS next_total_amount
+	FROM workspace.sparkassociate.gizmobox_orders_json;
+	-- In this example, LEAD(total_amount, 1) retrieves the total_amount from the next row within the same customer_id partition, 
+	ordered by order_date.
+
+	SELECT
+		customer_id,
+		order_id,
+		total_amount,
+		LAG(total_amount, 1) OVER (PARTITION BY customer_id ORDER BY order_date) AS previous_total_amount
+	FROM workspace.sparkassociate.gizmobox_orders_json;
+	-- In this example, LAG(total_amount, 1) retrieves the total_amount from the previous row within the same customer_id partition, 
+	ordered by order_date.
+	
+	
+======================================================= Nested Data Structures ===============================================================================
+
+Reading values from JSON String without parsing :
+	value :   use value: incase sql query from table 
+		> select value:order_id 					from ${catalogname}.bronze.view_orders; 
+		> select value:items[0].name 				from ${catalogname}.bronze.view_orders;
+		> select value:items[0].item_id::INTEGER    from ${catalogname}.bronze.view_orders;
+
+	get_json_object : Incase DataFrame use this 
+		from pyspark.sql.functions import get_json_object
+		first_element_df = df.select(get_json_object(col("value"), "$.order_id").alias("order_id"))
+
+Steps to Convert JSON Strings to StructTypes	
+	schema_of_<<json/csv/variant/xml>> :  Returns the schema in DDL format / Determine the structure of the JSON data
+		- schema_of_json(jsonStr [, options] )
+			jsonStr: A STRING expression with a JSON string.
+			options: An optional MAP literals with keys and values being STRING.
+		> SELECT schema_of_json('[{"col":0}]');  // ARRAY<STRUCT<`col`: BIGINT>>
+		> SELECT schema_of_json('[{"col":01}]', map('allowNumericLeadingZeros', 'true'));  // ARRAY<STRUCT<`col`: BIGINT>>
+
+	from_<<json/csv/avro/xml>> : Parse the String with Schema  / Convert strings to structured data
+		- from_json(jsonStr, schema [, options])  // Returns a struct value with the jsonStr and schema.  
+			jsonStr: A STRING expression specifying a json document.
+			schema: A STRING expression or invocation of schema_of_json function.
+			options: An optional MAP<STRING,STRING> literal specifying directives.
+		> SELECT from_json('{"a":1, "b":0.8}', 'a INT, b DOUBLE');//	{"a":1,"b":0.8}
+			-- The column name must to match the case of the JSON field
+		> SELECT from_json('{"a":1}', 'A INT'); // {"A":null}
+		> SELECT from_json('{"datetime":"26/08/2015"}', 'datetime Timestamp', map('timestampFormat', 'dd/MM/yyyy')); // {"datetime":2015-08-26 00:00:00}
+			-- Disambiguate field names with different cases
+		> SELECT cast(from_json('{"a":1, "A":0.8}', 'a INT, A DOUBLE') AS STRUCT<a: INT, b: DOUBLE>); // {"a":1, "b":0.8}
+		> select from_json(fixed_value,'STRUCT<customer_id: BIGINT,items: ARRAY<STRUCT<category: STRING,quantity: BIGINT>>')
+
+
+	DataFrame Example :- 
+		schema = schema_of_json(lit(df.first()[0]))  # get the schema from first column
+		parseddata_df = df.select(from_json(col("value"), schema).alias("parsed_data"))   # Parse json text using schema
+		split_df = parseddata_df.select("parsed_data.*") # Split the struct into columns
+
+		
+Working with Nested Data Structures
+	 Struct and Array Types: Manage complex data types like structs and arrays. Use DataFrame API functions such as select, withColumn, and explode to manipulate nested data.
+			Why Convert JSON Strings to StructTypes?  JSON strings in Spark DataFrames come with several inefficiencies:
+				Parsing Overhead   		   : Every time you query JSON strings, Spark needs to parse them, adding computational overhead
+				Memory Inefficiency		   : JSON strings store field names repeatedly for every row, wasting memory
+				No Type Safety             : JSON strings don't enforce data types, leading to potential errors
+				Poor Query Performance     : Spark can't optimize queries on JSON string content as effectively
+				Limited Predicate Pushdown : Filter operations can't leverage columnar storage optimizations 
+			
+			Benefits of StructTypes
+				Columnar Storage: Efficient storage with Parquet/Delta
+				Type Safety: Schema enforcement prevents data errors
+				Query Optimization: Spark can optimize queries better with typed data
+				Predicate Pushdown: Filters can be pushed down to storage layer
+				Better Performance: Faster queries and reduced memory usage
+				
+	 Accessing Nested Fields: Use dot notation to access nested fields within structs. Apply transformations directly on nested columns.
+			- nonnull_df.select('items.category').display()
+
+	 Working with Arrays 
+			Exploding Arrays: Use the explode function to convert array elements into individual rows. This is useful for flattening nested arrays.
+				explode : 
+					- Returns a set of rows by un-nesting collection. 
+					- Returns A set of rows composed of the elements of the array or the keys and values of the map. 
+					- The column produced by explode of an array is named col. The columns for a map are called key and value.
+						> SELECT explode(array(10, 20)) AS elem, 'Spark';
+							10 Spark
+							20 Spark
+						> SELECT explode(map(1, 'a', 2, 'b')) AS (num, val), 'Spark';
+							1   a   Spark
+							2   b   Spark
+					- you can use the explode function to flatten the items array and then select the category field.		
+						exploded_df = nonnull_df.filter(col('customer_id') == 1987).select(explode(col("items.details")),'customer_id') 
+						- Creates a new row for each element in the given array or map column.
+			
+		  Creating Collections :- collect_list / collect_set 
+			collect_list :
+				- Description: Collects all values in the specified column into an array.
+				- Syntax: collect_list(expr)
+			collect_set
+				- Description: Collects unique values in the specified column into an array.
+				- Syntax: collect_set(expr)
+
+Key Takeaways
+	Struct Type Operations:
+		Use dot notation for simple access  
+			- nonnull_df.select('items.category').display()
+		getField() : 
+			- The getField function in PySpark is used for dynamic column access, allowing you to access nested fields within a struct or map column. 
+			- This is particularly useful when the field names are not known at compile time and need to be accessed dynamically.
+			> dynamic_field = "category"  dynamic_df = nonnull_df.select(col("items").getField(dynamic_field).alias(dynamic_field))
+		get_json_object : 
+			- The get_json_object function in PySpark is used to extract a specific field from a JSON string column. 
+			- It allows you to query JSON data stored as strings in a DataFrame column without needing to define a schema.
+			> df.select(get_json_object(col("value"), "$.order_id").alias("order_id"))
+		Maintain schema clarity
+			- Schema_of_<<json>>
+			- from_<<json>>
+	Array Operations:
+		Use array functions for manipulation : explode , array_contains , element_at , size ,array_distinct
+		Leverage explode for detailed analysis
+		Consider performance with large arrays
+
+===============================================================  Spark SQL  spark.sql()===================================================================
+The spark.sql() method in PySpark is used to execute SQL queries directly on Spark DataFrames. Here are some scenarios where you might use spark.sql():
+
+1. Complex SQL Queries : When you need to perform complex SQL operations that are easier to express in SQL syntax rather than using DataFrame API.
+		The triple quotes """ are used in Python to define multi-line strings. This is useful when writing SQL queries that span multiple lines for better readability. Here is an example:
+		df = spark.sql(""" 
+							SELECT customer_id, 
+								   COUNT(*) AS order_count, 
+								   AVG(total_amount) AS avg_amount 
+							FROM workspace.sparkassociate.gizmobox_orders_json 
+							GROUP BY customer_id 
+							HAVING avg_amount > 100
+						""")
+		
+
+2. Interoperability with SQL-based Systems : When integrating with systems that use SQL, such as Hive or external databases, and you want to leverage existing SQL queries.
+		df = spark.sql("SELECT * FROM hive_table WHERE condition = 'value'")
+
+3. Ad-hoc Analysis : For quick, ad-hoc data analysis where writing SQL queries is more convenient.
+		df = spark.sql("SELECT * FROM workspace.sparkassociate.gizmobox_orders_json WHERE total_amount > 100")
+		
+4. Data Transformation : When performing data transformations that are more naturally expressed in SQL.		
+		df = spark.sql("""
+							SELECT customer_id, order_id, total_amount, 
+								   CASE 
+									   WHEN total_amount > 100 THEN 'High' 
+									   WHEN total_amount > 50 THEN 'Medium' 
+									   ELSE 'Low' 
+								   END AS amount_category 
+							FROM workspace.sparkassociate.gizmobox_orders_json
+				""")
+
+5. Combining Data from Multiple Tables : When you need to join multiple tables or datasets.
+		df = spark.sql("""
+				SELECT a.*, b.* 
+				FROM workspace.sparkassociate.gizmobox_orders_json a 
+				JOIN another_table b 
+				ON a.common_column = b.common_column
+		""")
+
+6. Using SQL Functions : When you want to use built-in SQL functions that might not have direct equivalents in the DataFrame API.
+	df = spark.sql("SELECT customer_id, MAX(total_amount) AS max_amount FROM workspace.sparkassociate.gizmobox_orders_json GROUP BY customer_id")
+
+
+========================================================================================================================================================================================
+
+repartition(), coalesce(), and spark_partition_id()
+
+🔹 1. repartition()
+		Used to increase or reshuffle the number of partitions.
+		Always causes a full shuffle — which can be expensive.
+		Creates evenly sized partitions.
+		When to use:
+			When you want more partitions for parallelism (e.g., after a filter).
+			When you want rebalancing of data across partitions.
+🔹 2. coalesce()
+		Used to reduce the number of partitions, without a full shuffle.
+		Just combines adjacent partitions.
+		Faster than repartition() for reducing partitions.
+		When to use:
+			For writing a small output (like writing a single file).
+			To optimize performance by reducing overhead after filters.
+🔹 3. spark_partition_id()
+		Returns the partition ID of each row in the DataFrame.
+		Helpful to inspect or debug partitioning.
+
+📊 Comparison Table
+Feature				repartition()					coalesce()							spark_partition_id()
+Purpose				Reshuffle data into N parts		Collapse partitions (no shuffle)	Inspect row-to-partition mapping
+Shuffle				Yes (full)						No (or minimal)						No shuffle
+Use Case			Increase partitions				Reduce partitions					Debug, inspect, visualize partitions
+Performance			Expensive						Faster than repartition				Lightweight
+Balancing			Even partitioning				May be uneven						N/A
+
+	data = [
+		("Alice", "HR", 4000),
+		("Bob", "HR", 4500),
+		("Charlie", "IT", 5000),
+		("David", "IT", 5500),
+		("Eve", "HR", 4200)
+	]
+	df = spark.createDataFrame(data, ["name", "department", "salary"])
+
+	df = df.repartition(4)                          # Force 4 partitions
+	df = df.withColumn("partition_id", spark_partition_id())
+	df.coalesce(2).show()          # Reduce to 2 partitions before write
+
+#### Coalesce Hints for SQL Queries
+	* Coalesce hints allows the Spark SQL users to control the number of output files just like the coalesce,repartition and repartitionByRange 
+	  In Dataset API, they can be used for performance tuning and reducing the number of output files. 
+	  The “COALESCE” hint only has a partition number as a parameter. 
+	  The “REPARTITION” hint has a partition number, columns, or both of them as parameters. 
+	  The “REPARTITION_BY_RANGE” hint must have column names and a partition number is optional.
+
+	  emp_csv.write.format('parquet').mode('overwrite').partitionBy('DEPTNO').saveAsTable('joins.emp')
+	  %sql
+		show create table joins.emp
+		%sql
+		--EXPLAIN   SELECT /*+ COALESCE(3) */ * FROM joins.emp where deptno=10;
+		--EXPLAIN SELECT /*+ REPARTITION(3) */ * FROM joins.emp where deptno=10;
+		EXPLAIN SELECT /*+ REPARTITION(deptno) */ * FROM joins.emp where deptno=20;
+		--SELECT /*+ REPARTITION(3, deptno) */ * FROM joins.emp;
+		--SELECT /*+ REPARTITION_BY_RANGE(deptno) */ * FROM joins.emp;
+		--SELECT /*+ REPARTITION_BY_RANGE(3, deptno) */ * FROM joins.emp;
+
+============================= Custom UDFs in Apache Spark =================================================================================
+
+ Creating UDFs: Create User-Defined Functions (UDFs) to extend Spark’s functionality. Register UDFs and apply them to DataFrame columns.
+	- UDFs allow yout o use pyhton functions on  DF columns 
+	- NOTE :- Can adversly impact performance as they cannot be optimized by Catalyst optimizer and have additional serilization overhead
+		@udf("string")
+		def greeting(name):
+			return f"hello, ${name}!"
+		df.select(greeting("Sam"))
+ Scalar UDFs: Define scalar UDFs that operate on individual rows. Register UDFs using udf function and apply them using withColumn.
+ Pandas UDFs: Use Pandas UDFs for better performance with vectorized operations. Define UDFs with pandas_udf decorator.
+		- Pandas UDFs allow you to write python functions that operate on batches of rows instaed of single rows, leveraging Apache Arroa for more
+		  efficient python-jvm serialization 
+		- More efficient than their non pandas counterparts
+		- You should still use built in functions if it is available 	
+		  @pandas_udf("integer")
+		  def plusone(age):
+			return age + 1
+		  df.select(plusone(1))	
+		  
+		  from pyspark.sql.functions import pandas_udf
+			# Pandas UDF (vectorized)
+			@pandas_udf("double")
+			def normalized_diff(diff_series):
+				return (diff_series - diff_series.mean()) / diff_series.std()
+			# Apply both UDFs
+			udf_example = enriched_flights_df \
+				.withColumn("diff_normalized", normalized_diff("ElapsedTimeDiff"))
+			display(udf_example)
+			# Note: In practice, prefer built-in functions over UDFs when possible
+		  
+		  
+ Type Safety: Ensure type safety by specifying input and output data types for UDFs.
+
+ Reusability: Create reusable UDFs for common transformations and apply them across multiple DataFrames.
+
+
+
