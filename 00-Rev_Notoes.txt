@@ -1,4 +1,5 @@
-In Python, a package is a collection of modules, and a module is a file containing Python code, which can define classes, functions, and variables.
+Python Package :
+A package is a collection of modules, and a module is a file containing Python code, which can define classes, functions, and variables.
 
 Step 1: Create a Package  : A package is a directory that contains a special __init__.py file and can contain multiple modules.
 my_package/
@@ -31,14 +32,7 @@ result = my_function(5, 3)
 print(result)  # Output: 8
 
 
-Python DataStrcutures:-
-set :
-	- A set in Python is an unordered collection of unique elements. 
-	- Sets are mutable, meaning you can add or remove elements, but each element must be unique and immutable (e.g., numbers, strings, tuples). 
-	- Sets are defined using curly braces {} or the set() function.
-		s3= {1,2,3,'a',True,'Sam',10.55}    	
-		print("Set is unordered ", s3)
-	
+Python DataStructures:-
 List : 
 	- A list in Python is an ordered collection of elements that can be of different types. 
 	- Lists are mutable, meaning you can change their content by adding, removing, or modifying elements. 
@@ -52,7 +46,14 @@ Tuple :
 	- Tuples are defined by enclosing the elements in parentheses () and separating them with commas.
 		t1= (1,2,3,'a',True,'Sam',10.55)        
 		print("Tuple maintains order ", t1)
-	
+
+set :
+	- A set in Python is an unordered collection of unique elements. 
+	- Sets are mutable, meaning you can add or remove elements, but each element must be unique and immutable (e.g., numbers, strings, tuples). 
+	- Sets are defined using curly braces {} or the set() function.
+		s3= {1,2,3,'a',True,'Sam',10.55}    	
+		print("Set is unordered ", s3)
+		
 Dictionary:	
 	- A dictionary in Python is an unordered collection of key-value pairs. 
 	- Each key is unique and is used to access the corresponding value. 
@@ -71,77 +72,36 @@ Indexing	Supported						Supported						Not supported							Keys used for accessi
 Order		Maintained						Maintained						Not maintained							Not maintained
 
 
-============================================================== package / module =================================================================================================================================	
--> use capital letters for class name -  CamelCase
--> package / module / function names typically follow the snake_case convention, which means they are written in lowercase with words separated by underscores.  
-   This is in contrast to class names, which use CamelCase
-
-from <<package.modules>>  	 import <<classes, functions , variables>> 
-from pyspark.sql 			 import SparkSession  //Import SparkSession Class from sql module 
-from pyspark.sql   			 import DataFrame     //Import DataFrame    Class from sql module 
-from pyspark.sql.DataFrame   import *  // This is invalid ModuleNotFoundError: No module named 'pyspark.sql.DataFrame' CAnt import from class
-from pyspark.sql.functions   import window,col,when,lit,upper,lower,avg,sum,count,to_date  //Import definitions from functions module 
-from pyspark.sql.types       import StructType, StructField, StringType, IntegerType, DoubleType
-from pyspark.sql.types       import *  //  For Module we can * and not class 
-
- pyspark.sql.SparkSession :Main entry point for Dataframe SparkSQL functionality
- pyspark.sql.DataFrame :A distributed collection of data grouped into named columns
- pyspark.sql.Column : A column expression in a DataFrame. 
- pyspark.sql.Row : A row of data in a DataFrame.
- pyspark.sql.GroupedData :Aggregation methods, returned by DataFrame.groupBy()
- pyspark.sql.DataFrameNaFunctions : Methods for handling missing data (null values).
- pyspark.sql.DataFrameStatFunctions : Methods for statistics functionality.
- pyspark.sql.functions : List of built-in functions available for DataFrame.
- pyspark.sql.types : List of data types available.
- pyspark.sql.Window : For working with window functions.
-
-
-Some modules present in pyspark package : 
-	pyspark.sql: This module provides the DataFrame and SQL functionalities.
-				pyspark.sql.SparkSession: The entry point to programming Spark with the DataFrame and SQL API.
-				pyspark.sql.DataFrame: A distributed collection of data organized into named columns.
-				pyspark.sql.functions: A collection of built-in functions for DataFrame operations.
-				pyspark.sql.types: Data types used in DataFrame schema.
-	pyspark.streaming: This module provides functionalities for Spark Streaming.
-				pyspark.streaming.StreamingContext: The main entry point for Spark Streaming functionality.
-	pyspark.rdd: This module provides functionalities for Resilient Distributed Datasets (RDDs).
-				pyspark.rdd.RDD: The main class representing an RDD.
-
-
-from pyspark.sql import SparkSession
-	SparkSession is the entry point to programming Spark with the Dataset and DataFrame API.
-	The SparkSession object "SPARK" is automatically created for you when you start a Databricks notebook, so you do not need to create it manually.
-	spark = ( SparkSession
-							.builder
-							.master("local")
-							.appName("Word Count")
-							.config("spark.some.config.option", "some-value")
-							.getOrCreate())
-		SparkSession.builder: This initializes the builder for creating a SparkSession.
-		master("local"): This sets the master URL to connect to. The value "local" means that Spark will run locally with one worker thread. You can also specify 
-							"local[N]" to run locally with N worker threads, or a cluster URL to run on a cluster.
-		appName("Word Count"): This sets the name of the application, which will be displayed in the Spark web UI.
-		config("spark.some.config.option", "some-value"): This sets a configuration option. In this example, it sets a custom configuration option 
-							spark.some.config.option to the value "some-value". You can set various Spark configuration properties using this method.
-		getOrCreate(): This method either retrieves an existing SparkSession or creates a new one if none exists. This ensures that you do not create multiple 
-							SparkSession instances in the same application.
-
-print(spark) # sparkSession
-print(sc)    # sparkContext
-
-
 =================================================  Data Abstractions in Spark ( RDD, DataSet, DataFrame) =====================================================================================================
 
-Spark provides three abstractions for handling data
+		Spark provides three abstractions for handling data
 
-RDDs : Distributed collections of objects that can be cached in memory across cluster nodes (e.g., if an array is large, it can be distributed across multiple clusters).
+RDDs : Resilient Distributed DataSet
+	- RDD can store RAW Format Data like individual items
+	- Distributed collections of objects that can be cached in memory across cluster nodes (e.g., if an array is large, it can be distributed across multiple clusters).
+	- We will use SparkContext for RDD Creation
+	- COLLECT() will get the resultset. DISPLAY() and SHOW() actions are not avialble in RDD.
 
-DataFrame : DataFrames are distributed collections of data organized into named columns, similar to tables in a relational database. They provide a powerful abstraction that supports structured and semi-structured data with optimized execution through the Catalyst optimizer.
-DataFrames are schema-aware and can be created from various data sources including structured files (CSV, JSON), Hive tables, or external databases, offering SQL-like operations for data manipulation and analysis.
+DataFrame : 
+	- Dataframes will contain two Dimension Structured Data( Like Columns & Rows)
+	- DataFrames are distributed collections of data organized into named columns, similar to tables in a relational database. 
+	- They provide a powerful abstraction that supports structured and semi-structured data with optimized execution through the Catalyst optimizer.
+	- DataFrames are schema-aware and can be created from various data sources including structured files (CSV, JSON), Hive tables, or external databases, 
+	  offering SQL-like operations for data manipulation and analysis.
+	- We will use Spark Session or SQLContext for DF Creation
+	- DISPLAY() And SHOW() will display in table formation. 
+	- Collect() will display row format
 
-Dataset : Datasets are a type-safe, object-oriented programming interface that provides the benefits of RDDs (static typing and lambda functions) while also leveraging Spark SQL's optimized execution engine.
+Dataset : 
+	- A Dataset is a distributed collection of data. 
+	- Dataset is a new interface added in Spark 1.6 that provides the benefits of RDDs (strong typing, ability to use powerful lambda functions) with the benefits of Spark SQL’s optimized execution engine. 
+	- A Dataset can be constructed from JVM objects and then manipulated using functional transformations (map, flatMap, filter, etc.). 
+	- The Dataset API is available in Scala and Java. Python does not have the support for the Dataset API. 
+	- But due to Python’s dynamic nature, many of the benefits of the Dataset API are already available (i.e. you can access the field of a row by name naturally row.columnName). The case for R is similar.
 
-They offer a unique combination of type safety and ease of use, making them particularly useful for applications where type safety is important and the data fits into well-defined schemas using case classes in Scala or Java beans.
+
+They offer a unique combination of type safety and ease of use, making them particularly useful for applications 
+where type safety is important and the data fits into well-defined schemas using case classes in Scala or Java beans.
 
 				Comparison of Spark Data Abstractions
 Feature				RDD						DataFrame						Dataset
@@ -154,8 +114,7 @@ Serialization		Java Serialization		Custom encoders					Custom encoders
 Language Support	All Spark languages		All Spark languages				Scala and Java only
 
 
-
-				Use Case Scenarios and Recommendations
+			Use Case Scenarios and Recommendations
 RDD	
 	– Low-level transformations 
 	– Custom data types 
@@ -186,15 +145,51 @@ Key Takeaways:
 	Opt for Datasets when you need both type safety and performance optimization
 
 
-			Initialization and Operations Examples
+			Initialization and Operations Examples  ****** interview question ***********
 Operation		RDD							DataFrame					Dataset
-Creation		sc.parallelize(List(1,2,3))	spark.createDataFrame(data)	spark.createDataset(data)
+Creation		sc.parallelize(List[1,2,3])	spark.createDataFrame(data)	spark.createDataset(data)
 Reading Files	sc.textFile("path")			spark.read.csv("path")		spark.read.csv("path").as[Case]
 Filtering		rdd.filter(x => x > 10)		df.filter($"col" > 10)		ds.filter(_.value > 10)
 Mapping			rdd.map(x => x * 2)			df.select($"col" * 2)		ds.map(x => x * 2)
 Grouping		rdd.groupBy(x => x)			df.groupBy("col")			ds.groupByKey(_.key)
 
+
+python  -> pandas    -> DataFrame -> rows,columns structured data     -> single node
+pyspark -> sparksql  -> DataFrame -> rows,columns structured data 	  -> distributed nodes 
+pyspark -> sparkcore -> RDD 	  -> non-structured data			  -> distributed nodes 
+
+ 
 ==============================================================  ways of creating dataframe   =======================================================================================================
+
+1. sqlContext     : sqlc.createDataFrame 
+2. sparkSession   : spark.createDataFrame
+3. spark read API : spark.read 
+5. convert RDD to DataFrame 
+6. spark.sql 
+7. convert pandas dataframe to PySpark DataFrame 
+8. From python collections 
+
+Create DataFrame using Python Collections / DataStructures :-
+-> 
+	# Create DataFrame
+	data = [('James','','Smith','1991-04-01','M',3000),
+	  ('Michael','Rose','','2000-05-19','M',4000),
+	  ('Robert','','Williams','1978-09-05','M',4000),
+	  ('Maria','Anne','Jones','1967-12-01','F',4000),
+	  ('Jen','Mary','Brown','1980-02-17','F',-1)
+	]
+	columns = ["firstname","middlename","lastname","dob","gender","salary"]
+	df = spark.createDataFrame(data=data, schema = columns)
+	Since DataFrame is a tabular format that has names and data types in columns, use df.printSchema() to get the schema of the DataFrame.	
+
+	data = [
+				{"id": 1, "name": "Alice", "age": 29},
+				{"id": 2, "name": "Bob", "age": 35}
+			]
+	df = spark.createDataFrame(data)
+	df.show()
+
+
 
 spark.createDataFrame 
 		- DataSource 
@@ -257,12 +252,18 @@ STRUCTFIELD		StructField					The value type of the data type of this field (e.g.
 VARIANT			VariantType					VariantVal
 OBJECT			Not Supported				Not supported
 
-===============================================================================================================================================================
-
-
-
-
 =============================================================  Spark Read APIs  ==============================================================
+
+Apache Spark, by default, supports a rich set of APIs to read and write several file formats.
+	Text Files (.txt)
+	CSV Files (.csv)
+	TSV Files (.tsv)
+	Avro Files (.avro)
+	JSON Files (.json)
+	Parquet (.parquet)
+	ORC Files (.orc)
+	XML Files and many other formats
+
 
 	- Spark read APIs to read files of different formats. 
 	- All APIs are exposed under DataFrameReader : spark.read()
@@ -442,8 +443,7 @@ crossJoin(other)					Returns the Cartesian product with another DataFrame.
 dropDuplicates(subset)				Drops duplicate rows based on the specified columns.
 alias(alias)						Returns a new DataFrame with an alias set.
 selectExpr(*expr)					Selects a set of SQL expressions.
-sample(withReplacement, fraction, 
-seed)								Returns a sampled subset of the DataFrame.
+sample(withReplacement, fraction,seed)	Returns a sampled subset of the DataFrame.
 randomSplit(weights, seed)			Splits the DataFrame into multiple DataFrames.
 describe(*cols)						Computes basic statistics for numeric columns.
 summary(*statistics)				Computes specified statistics for numeric and string columns.
@@ -451,8 +451,7 @@ crosstab(col1, col2)				Computes a pair-wise frequency table of the given column
 stat.corr(col1, col2)				Computes the correlation of two columns.
 stat.cov(col1, col2)				Computes the covariance of two columns.
 stat.freqItems(cols, support)		Finds frequent items for columns.
-stat.approxQuantile(col, 
-probabilities, relError)			Calculates the approximate quantiles of numerical columns.
+stat.approxQuantile(col, probabilities, relError)			Calculates the approximate quantiles of numerical columns.
 
 
 Action								Description
